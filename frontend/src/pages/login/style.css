@@ -1,0 +1,23 @@
+.login-wrapper {
+    background-image: url('../../images/book-grass.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-header {
+    background-color: rgba(0, 255, 0, 0.7);
+    width: 500px;
+    padding: 50px 50px 10px;
+}
+
+.login-form {
+    background-color: rgba(0, 255, 0, 0.3);
+    width: 500px;
+    padding: 10px 50px 50px;
+}
