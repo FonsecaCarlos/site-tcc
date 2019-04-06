@@ -4,17 +4,17 @@ const auth = require('./auth')
 module.exports = function(server) {
 
 
-    // Definir URL base para todas as rotas
+    /*/ Definir URL base para todas as rotas
     const router = express.Router()
     server.use('/api', router)
-    // Rotas de Ciclo de Pagamento
+    // Rotas dos textos narrativos
     const NarrativeText = require('../api/narrativeText/narrativeTextService')
-    NarrativeText.register(router, '/narrativeText')
+    NarrativeText.register(router, '/narrativeText')*/
     
     /*
     * Rotas protegidas por Token JWT
     */
-    /*const protectedApi = express.Router()
+    const protectedApi = express.Router()
     server.use('/api', protectedApi)
     protectedApi.use(auth)
     const NarrativeText = require('../api/narrativeText/narrativeTextService')
@@ -23,11 +23,11 @@ module.exports = function(server) {
     /*
     * Rotas abertas
     */
-    /*const openApi = express.Router()
+    const openApi = express.Router()
     server.use('/oapi', openApi)
     
     const AuthService = require('../api/user/authService')
     openApi.post('/login', AuthService.login)
     openApi.post('/signup', AuthService.signup)
     openApi.post('/validateToken', AuthService.validateToken)
-*/}
+}

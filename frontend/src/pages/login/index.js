@@ -1,44 +1,62 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
-import InputCustom from '../../components/imputCustom';
+import { reduxForm, Field } from 'redux-form'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { login, signup } from './authActions'
 
-import ButtonCustom from '../../components/buttonCustom';
-
-import HeaderLogin from '../../components/headerLogin';
+import InputCustom from '../../components/inputCustom'
+import HeaderLogin from '../../components/headerLogin'
 
 import './style.css'
 
-export default class Login extends Component {
-    constructor(){
-        super();
-        this.state = {
-          user:'',
-          password:''
-        };
+class Login extends Component {
+    constructor() {
+        super()
+        this.state = { loginMode: true }
     }
 
-    saveChange(nomeInput,evento){
-        this.setState({[nomeInput]:evento.target.value});
+    changeMode() {
+        this.setState({ loginMode: !this.state.loginMode })
     }
 
-    render(){
-        return(
+    onSubmit(values) {
+        const { login, signup } = this.props
+        this.state.loginMode ? login(values) : signup(values)
+    }
+
+    render() {
+        const { loginMode } = this.state
+        const { handleSubmit } = this.props
+        return (
             <div className="login-wrapper">
                 <div>
                     <div className='login-header'>
-                        <HeaderLogin/>
+                        <HeaderLogin />
                     </div>
                     <div className="login-form">
-                        <form>                                          
-                            <InputCustom id="user" type="text" name="user" value={this.state.user} onChange={this.saveChange.bind(this,'user')} placeholder="Usuário"/>                                              
-                            <InputCustom id="password" type="password" name="password" value={this.state.password} onChange={this.saveChange.bind(this,'password')} placeholder="Senha"/>
-                                                                    
-                            <ButtonCustom label="Acessar"/>
-                            <ButtonCustom label="Criar Conta"/>                                              
+                        <form onSubmit={handleSubmit(v => this.onSubmit(v))}>
+                            <Field component={InputCustom} type="input" name="name" placeholder="Nome" hide={loginMode} />
+                            <Field component={InputCustom} type="email" name="email" placeholder="E-mail" />
+                            <Field component={InputCustom} type="password" name="password" placeholder="Senha" />
+                            <Field component={InputCustom} type="password" name="confirm_password" placeholder="Confirmar Senha" hide={loginMode} />
+
+                            <a href='#' onClick={() => this.changeMode()}>
+                                {loginMode ? 'Novo usuário? Registrar aqui!' :
+                                    'Já é cadastrado? Entrar aqui!'}
+                            </a>
+
+                            <button type="submit" className="button-form">
+                                {loginMode ? 'Entrar' : 'Registrar'}
+                            </button>
                         </form>
                     </div>
-                </div>             
+                </div>
             </div>
         );
     }
 }
+
+Login = reduxForm({ form: 'authForm' })(Login)
+const mapDispatchToProps = dispatch => bindActionCreators({ login, signup }, dispatch)
+export default connect(null, mapDispatchToProps)(Login)

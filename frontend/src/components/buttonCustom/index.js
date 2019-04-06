@@ -1,13 +1,8 @@
 import React from 'react';
+import './style.css'
 
-class ButtonCustom extends React.Component {
-    render() {
-        return (
-            <button className="" {...this.props} >
-                {this.props.label}
-            </button>
-        ); 
-    }
-}
-
-export default ButtonCustom;
+export default props => (
+    <button className="buttonCustom" { ...props } >
+        { props.label }
+    </button>
+)

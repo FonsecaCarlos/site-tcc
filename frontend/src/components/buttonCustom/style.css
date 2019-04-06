@@ -1,0 +1,9 @@
+.buttonCustom {
+    background-color: rgba(1, 82, 73, 0.9);
+    width: 80%;
+    padding: 10px 10px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    color: aliceblue;
+    border: none;
+}

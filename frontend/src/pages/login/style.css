@@ -11,13 +11,30 @@
 }
 
 .login-header {
-    background-color: rgba(0, 255, 0, 0.7);
-    width: 500px;
+    background-color: rgba(1, 82, 73, 0.9);
+    width: 400px;
     padding: 50px 50px 10px;
 }
 
 .login-form {
-    background-color: rgba(0, 255, 0, 0.3);
-    width: 500px;
+    background-color: rgba(87, 188, 144, 0.9);
+    width: 400px;
     padding: 10px 50px 50px;
+}
+
+.login-form a {
+    text-decoration: none;
+    color: black;
+    display: block;
+    font-size: 0.9em;
+}
+
+.button-form {
+    background-color: rgba(1, 82, 73, 0.9);
+    width: 80%;
+    padding: 10px 10px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    color: aliceblue;
+    border: none;
 }
