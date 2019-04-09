@@ -1,14 +1,18 @@
 const restful = require('node-restful')
 const mongoose = restful.mongoose
-//const Author = mongoose.model('User')
+const mongoosePaginate = require('mongoose-paginate');
 
-const narrativeTextSchema = new mongoose.Schema({
+const NarrativeTextSchema = new mongoose.Schema({
     author: { type: String /*Author*/, required: true },
     createdAt: { type: Date, default: Date.now },
     title: { type: String, required: [true, 'Informe o título do texto!'] },
     text: { type: String, required: [true, 'Texto vazio!'] },
-    status: { type: String, required: true, uppercase: true,
-        enum: ['CONCLUIDO', 'PENDENTE', 'ABERTO'] }
+    status: { type: String, default: 'ABERTO',required: true, uppercase: true,
+        enum: ['CONCLUIDO', 'ABERTO'] },
+    isPublic: { type: Boolean, default: true},
+    alternativeText: { type: [String], required: false }
 })
 
-module.exports = restful.model('NarrativeText', narrativeTextSchema)
+NarrativeTextSchema.plugin(mongoosePaginate)
+
+module.exports = restful.model('NarrativeText', NarrativeTextSchema)
