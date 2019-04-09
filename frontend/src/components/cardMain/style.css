@@ -1,0 +1,21 @@
+.box-card {
+    background-color: rgba(1, 82, 73, 0.9);
+    width: 30%;
+    margin: 20px 0;
+    padding: 15px;
+}
+
+.row-card p {
+    margin: 5px;
+    color: aliceblue;
+    text-align: justify;
+}
+
+
+
+@media (max-width: 800px) {
+    .box-card {
+        width: 100%;
+        margin: 10px 0 0 0;
+    }
+}
