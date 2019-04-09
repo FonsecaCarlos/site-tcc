@@ -2,21 +2,13 @@ const express = require('express')
 const auth = require('./auth')
 
 module.exports = function(server) {
-
-
-    /*/ Definir URL base para todas as rotas
-    const router = express.Router()
-    server.use('/api', router)
-    // Rotas dos textos narrativos
-    const NarrativeText = require('../api/narrativeText/narrativeTextService')
-    NarrativeText.register(router, '/narrativeText')*/
-    
     /*
     * Rotas protegidas por Token JWT
     */
     const protectedApi = express.Router()
     server.use('/api', protectedApi)
     protectedApi.use(auth)
+
     const NarrativeText = require('../api/narrativeText/narrativeTextService')
     NarrativeText.register(protectedApi, '/narrativeText')
 
