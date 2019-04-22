@@ -7,7 +7,7 @@ NarrativeText.after('post', errorHandler).after('put', errorHandler)
 
 const index = (req, res, next) => {
     const { page=1 } = req.query
-    NarrativeText.paginate({}, { page, limit:15 })
+    NarrativeText.paginate({}, { page, limit:12 })
         .then((narrativeText) => {
             return res.json(narrativeText)
         })
