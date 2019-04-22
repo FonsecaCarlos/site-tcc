@@ -4,7 +4,8 @@ import './style.css'
 
 const cardMain = (props) => {
     return ( 
-        <div className='box-card'>
+        <div className='box-card'
+        onClick={props.click}>
             <div className='row-card'>
                 <p><strong>Titulo: </strong>{props.title}</p>
             </div>
