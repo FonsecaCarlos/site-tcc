@@ -2,7 +2,7 @@
     background-image: url('../../images/blank-business-composition-1280.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-    height: 100vh;
+    /*height: 100vh;*/
     display: flex;
     flex-flow: column nowrap;
 }
@@ -15,11 +15,32 @@
     padding: 0 40px;
 }
 
-@media (max-width: 800px) {
+.actions {
+    display: flex;
+    align-content: flex-end;
+    align-self: stretch;
+    flex-flow: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.actions button {
+    background-color: rgba(1, 82, 73, 0.9);    
+    color: aliceblue;
+    border: none;
+    padding: 10px;
+}
+
+
+@media (max-width: 1000px) {
+
+}
+
+@media (max-width: 700px) {
     .main-wrapper {
         background-image: none;
         background-color: aliceblue;
-        height: 100vh;
         width: 100%;
     }
     
