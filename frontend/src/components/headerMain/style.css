@@ -1,18 +1,18 @@
 .header-main {
+    background-color: var(--background-color);
     margin: 10px 40px;
-    height: 100px;
-    background-color: rgba(1, 82, 73, 0.9);
     width: auto;
     color: aliceblue;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     min-height: 100px;
 }
 
 .header {
     display: flex;
-    flex: 2;
-    padding: 0 30px;
+    justify-content: space-around;
+    padding: 0 20px;
 }
 
 .header-historias {
@@ -22,16 +22,6 @@
 
 .header-left {
     padding: 20px 0 0 0;
-}
-
-.header-left button {
-    background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit
 }
 
 .header-search {
@@ -45,10 +35,21 @@
     border-bottom: solid 1px aliceblue; /*Coloca borda somente na parte de baixo*/
 }
 
-.header-button {
+.header-buttons {
     display: flex;
     width: 100%;
     justify-content: space-around;
+}
+
+.header-button {
+    margin: 0 10px;
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
 }
 
 

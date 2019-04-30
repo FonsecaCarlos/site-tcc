@@ -1,9 +1,10 @@
 .buttonCustom {
-    background-color: rgba(1, 82, 73, 0.9);
-    width: 80%;
-    padding: 10px 10px;
-    margin: 4px 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 10px 20px;
+    margin: 5px 10px;
     box-sizing: border-box;
-    color: aliceblue;
     border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
