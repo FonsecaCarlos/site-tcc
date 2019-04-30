@@ -4,6 +4,9 @@ import { Redirect } from 'react-router-dom'
 import api from '../../services/api'
 import HeaderMain from '../../components/headerMain'
 import CardMain from '../../components/cardMain'
+import ButtonCustom from '../../components/buttonCustom'
+import Author from '../../services/authorFromLocalStorage'
+
 import './style.css'
 
 class MainHistory extends Component {
@@ -14,35 +17,53 @@ class MainHistory extends Component {
             idHistory: null,
             redirect: false,
             historys: [],
-            historysInfo: {},
-            page: 1
+            historysInfo: {
+                pageCount: 1
+            },
+            pageCount: 1,
+            author: {}
         }
     }
 
     componentDidMount() {
-        this.loadHistorys()
+        this.setAuthor()
+        //this.loadHistorysPublics()
+        this.loadMyHistorys( Author() )
     }
 
-    loadHistorys = async (page = 1) => {
-        const response = await api.get(`/narrativeText/index?page=${page}`)
-        const { docs, ...historysInfo } = response.data
-        this.setState({ historys: docs, historysInfo, page })
+    setAuthor = () => {
+        const userKey = '_textNarrative_user'
+        const authorJSON = localStorage.getItem(userKey)
+        const author = JSON.parse(authorJSON)
+        this.setState({ author: author })
+    }
+
+    loadMyHistorys = async (author, pageCount = 1) => {
+        const response = await api.get(`/narrativeText/index?page=${pageCount}&_id=${author._id}`)
+        const { data, ...historysInfo  } = response.data
+        this.setState({ historys: data, historysInfo, pageCount })
+    }
+
+    loadHistorysPublics = async (pageCount = 1) => {
+        const response = await api.get(`/narrativeText/indexPublic?page=${pageCount}`)
+        const { data, ...historysInfo } = response.data
+        this.setState({ historys: data, historysInfo, pageCount })
     }
 
     prevPage = () => {
-        const { page } = this.state
-        if (page === 1) return
+        const { pageCount } = this.state
+        if (pageCount === 1) return
 
-        const pageNumber = page - 1
-        this.loadHistorys(pageNumber)
+        const pageNumber = pageCount - 1
+        this.loadMyHistorys( Author(), pageNumber)
     }
 
     nextPage = () => {
-        const { page, historysInfo } = this.state
-        if (page === historysInfo.pages) return
+        const { pageCount, historysInfo } = this.state
+        if (pageCount === historysInfo.pageCount) return
 
-        const pageNumber = page + 1
-        this.loadHistorys(pageNumber)
+        const pageNumber = pageCount + 1
+        this.loadMyHistorys( Author(), pageNumber)
     }
 
     handleClickHistory = (idHistory) => {
@@ -50,31 +71,36 @@ class MainHistory extends Component {
     }
 
     render() {
-        const { historys, page, historysInfo, redirect, idHistory } = this.state
-
+        const { historys, pageCount, historysInfo, redirect, idHistory, author } = this.state
+        
         if (redirect)
             return <Redirect push to={{
-                pathname: "/narrativeText",
-                state: { idHistory }
+                pathname: "/readhistory",
+                state: { _id: idHistory }
             }} />
-
+        
         return (
             <div className='main-wrapper'>
-                <HeaderMain name={'Carlos Fonseca'} email={'carlos.fonseca@novaandradina.org'} />
+                <HeaderMain name={author.name} publicHistory={this.loadHistorysPublics}/>
+                
                 <div className='main-cards'>
                     {historys.map(history => (
                         <CardMain key={history._id}
                             title={history.title}
                             author={history.author}
-                            text={history.text.substring(0, 200)}
+                            text={history.text}
                             createdAt={history.createdAt}
                             click={() => this.handleClickHistory(history._id)} />
                     ))}
                 </div>
-
+                
                 <div className='actions'>
-                    <button disabled={page === 1} onClick={this.prevPage}>Anterior</button>
-                    <button disabled={page === historysInfo.pages} onClick={this.nextPage}>Próximo</button>
+                    <ButtonCustom disabled={pageCount === 1} 
+                        className={ pageCount === 1 ? 'grey' : '' }
+                        onClick={this.prevPage} label='Anterior'/>
+                    <ButtonCustom disabled={pageCount === historysInfo.pageCount} 
+                        className={ pageCount === historysInfo.pageCount ? 'grey' : '' }
+                        onClick={this.nextPage} label='Próximo'/>
                 </div>
             </div>
         )

@@ -41,10 +41,11 @@ class Login extends Component {
                             <Field component={InputCustom} type="password" name="password" placeholder="Senha" />
                             <Field component={InputCustom} type="password" name="confirm_password" placeholder="Confirmar Senha" hide={loginMode} />
 
-                            <a href='#' onClick={() => this.changeMode()}>
+
+                            <p onClick={() => this.changeMode()}>
                                 {loginMode ? 'Novo usuário? Registrar aqui!' :
                                     'Já é cadastrado? Entrar aqui!'}
-                            </a>
+                            </p>
 
                             <button type="submit" className="button-form">
                                 {loginMode ? 'Entrar' : 'Registrar'}
@@ -53,7 +54,7 @@ class Login extends Component {
                     </div>
                 </div>
             </div>
-        );
+        )
     }
 }
 

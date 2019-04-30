@@ -1,5 +1,5 @@
-.login-wrapper {
-    background-image: url('../../images/book-grass.jpg');
+.create-history-wrapper {
+    background-image: url('../../images/blank-business-composition-1280.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     display: flex;
@@ -10,33 +10,32 @@
     height: 100vh;
 }
 
-.login-header {
+.create-history-header {
     background-color: var(--background-color);
     width: 400px;
-    padding: 50px 50px 10px;
+    padding: 50px 50px;
+    color: var(--text-color);
 }
 
-.login-form {
+.create-history-form {
     background-color: rgba(87, 188, 144, 0.9);
     width: 400px;
-    padding: 10px 50px 50px;
+    padding: 30px 50px;
 }
 
-.login-form p {
-    text-decoration: none;
-    color: black;
-    display: block;
-    font-size: 0.9em;
-    cursor: pointer;
+.create-history-box-button-form {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 20px;
 }
 
-.button-form {
+.create-history-button-form {
     background-color: var(--background-color);
     color: var(--text-color);
     cursor: pointer;
-    width: 80%;
-    padding: 10px 10px;
-    margin: 4px 0;
+    padding: 10px 20px;
     box-sizing: border-box;
     border: none;
+    text-decoration: none;
+    font-size: .8em;
 }

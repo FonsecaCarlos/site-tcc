@@ -2,14 +2,13 @@ import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import api from '../../services/api'
-import Author from '../../services/authorFromLocalStorage'
 
 import TemplateHistory from '../../components/templateHistory'
 
-class ReadHistory extends Component {
+class WriteHistory extends Component {
     constructor(props) {
         super(props)
-        this.state = {
+        this.state = { 
             alternativeText: [],
             author: '',
             createdAt: null,
@@ -18,47 +17,51 @@ class ReadHistory extends Component {
             text: '',
             title: '',
             _id: null,
-            edit: false,
+            edit: true,
             back: false,
-            addAlternativeText: false
-        }
+            addAlternativeText: false,
+            isModifed: false
+         }
     }
 
     componentDidMount() {
         const { ...id } = this.props.location.state
         const idHistory = id['_id']
         this.loadHistory(idHistory)
+        this.setState({isModifed: false})
     }
 
     loadHistory = async (id) => {
-        const author = Author()
+        const userKey = '_textNarrative_user'
+        const authorJSON = localStorage.getItem(userKey)
+        const author = JSON.parse(authorJSON)
         const response = await api.get(`/narrativeText/indexHistory?_id=${id}&author=${author._id}`)
         //tenho que pegar a history assim por conta do aggregatepaginate
         const history = response.data.data[0]
-        this.setState({ ...history })
+        this.setState({ isModifed: false, ...history })
     }
 
     handleEditor = (e) => {
-        this.setState({ text: e.htmlValue })
+        const textValue = e.htmlValue
+        const text = textValue===null ? '' : textValue
+        this.setState({ text, isModifed: true })
     }
 
     handleIsPublic = (e) => {
         const isPublic = !this.state.isPublic
-        this.setState({ isPublic })
-    }
-
-    handleEdit = (e) => {
-        const edit = !this.state.edit
-        this.setState({ edit })
+        this.setState({isPublic})
     }
 
     handleBack = (e) => {
         const back = !this.state.back
-        this.setState({ back })
+        this.setState({back})
     }
 
-    reloadHistory = (id) => {
-        this.loadHistory(id)
+    save = async () => {
+        const { _id, text, isPublic} = this.state
+        const resp = await api.put(`/narrativeText/${_id}`, { _id, text, isPublic})
+        const history = resp.data
+        this.loadHistory(history._id)
     }
 
     addAlternativeText = (e) => {
@@ -66,8 +69,8 @@ class ReadHistory extends Component {
         this.setState({addAlternativeText})
     }
 
-    render() {
-        const { edit, _id, back, addAlternativeText } = this.state
+    render() { 
+        const { back, _id, addAlternativeText } = this.state
 
         if (addAlternativeText)
             return <Redirect push to={{
@@ -75,26 +78,21 @@ class ReadHistory extends Component {
                 state: { _id }
             }} />
 
-        if (edit)
-            return <Redirect push to={{
-                pathname: "/writehistory",
-                state: { _id }
-            }} />
-
         if (back)
             return <Redirect push to={{
-                pathname: "/",
+                pathname: "/readhistory",
                 state: { _id }
             }} />
 
-        return (
-            <TemplateHistory handleEdit={this.handleEdit}
-                history={this.state}
-                handleBack={this.handleBack}
-                reloadHistory={this.reloadHistory}
+        return ( 
+            <TemplateHistory handleBack={this.handleBack}
+                handleEditor={this.handleEditor}
+                handleIsPublic={this.handleIsPublic} 
+                history={ this.state }
+                save={this.save}
                 addAlternativeText={this.addAlternativeText} />
-        )
+         )
     }
 }
-
-export default ReadHistory
+ 
+export default WriteHistory

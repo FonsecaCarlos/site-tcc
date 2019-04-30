@@ -2,7 +2,8 @@
     background-image: url('../../images/blank-business-composition-1280.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-    /*height: 100vh;*/
+    background-attachment: fixed;
+    min-height: 100vh;
     display: flex;
     flex-flow: column nowrap;
 }
@@ -17,19 +18,15 @@
 
 .actions {
     display: flex;
-    align-content: flex-end;
-    align-self: stretch;
     flex-flow: row;
     flex-wrap: wrap;
     justify-content: space-around;
     padding: 10px;
 }
 
-.actions button {
-    background-color: rgba(1, 82, 73, 0.9);    
-    color: aliceblue;
-    border: none;
-    padding: 10px;
+.grey {
+    background-color: rgba(105,105,105,.9);
+    display: none;
 }
 
 
