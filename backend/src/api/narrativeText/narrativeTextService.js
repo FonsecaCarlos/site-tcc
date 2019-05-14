@@ -12,8 +12,8 @@ NarrativeText.after('post', errorHandler).after('put', errorHandler)
 //index - rota de paginação => são retornados todas as 
 //historias de um determinado author
 const index = (req, res, next) => {
-    const { page = 1, _id = "" } = req.query
-    const id = new ObjectId(_id)
+    const { page = 1, idAuthor = "" } = req.query
+    const id = new ObjectId(idAuthor)
 
     const aggregate = NarrativeText.aggregate()
     aggregate.lookup({
@@ -28,8 +28,8 @@ const index = (req, res, next) => {
         sharedWith: 0,
         __v: 0,
         status: 0,
-        author: { password: 0, email: 0, _id: 0, __v: 0 }
-    })
+        author: { password: 0, email: 0, __v: 0 }
+    }).sort({createdAt: -1})
 
     NarrativeText.aggregatePaginate(aggregate, { page, limit: 12 })
         .then((narrativeText) => {
@@ -55,10 +55,11 @@ const indexPublic = (req, res, next) => {
         sharedWith: 0,
         __v: 0,
         status: 0,
-        author: { password: 0, email: 0, _id: 0, __v: 0 }
+        author: { password: 0, email: 0, __v: 0 }
     })
     .match({ "isPublic": true })
     .match({"isMaster": true})
+    .sort({createdAt: -1})
 
     const { page = 1 } = req.query
     NarrativeText.aggregatePaginate(aggregate, { page, limit: 12 })
@@ -72,9 +73,9 @@ const indexPublic = (req, res, next) => {
 
 //indexHistory - rota get => retorna uma historia com o name e id do author
 const indexHistory = (req, res, next) => {
-    const { _id = "", author="" } = req.query
-    const idHistory = new ObjectId(_id)
-    const idAuthor = new ObjectId(author)
+    const { idHistory = "", idAuthor="" } = req.query
+    const idHist = new ObjectId(idHistory)
+    const idAuth = new ObjectId(idAuthor)
 
     const aggregate = NarrativeText.aggregate()
     aggregate.lookup({
@@ -83,8 +84,8 @@ const indexHistory = (req, res, next) => {
         foreignField: "_id",
         as: "author"
     }).unwind("author")
-    .match({"author._id": idAuthor})
-    .match({"_id": idHistory})
+    .match({"author._id": idAuth})
+    .match({"_id": idHist})
     .project({
         sharedWith: 0,
         __v: 0,
@@ -122,10 +123,46 @@ const addAlternativeText = (req, res, next) => {
         })
 }
 
+//searchHistory - rota de paginação => são retornados todas as 
+//historias publicas e todas do author com o titulo pesquisado
+const searchHistory = (req, res, next) => {
+    const { idAuthor, title } = req.query
+    const id = new ObjectId(idAuthor)
+    
+    const aggregate = NarrativeText.aggregate()
+    aggregate.lookup({
+        from: "users",
+        localField: "author",
+        foreignField: "_id",
+        as: "author"
+    }).unwind("author")
+    .match({"isPublic": true,
+        //"author._id": id,
+        "title": {$regex: title}})
+    .project({
+        alternativeText: 0,
+        sharedWith: 0,
+        __v: 0,
+        status: 0,
+        author: { password: 0, email: 0, _id: 0, __v: 0 }
+    })
+    .sort({createdAt: -1})
+    
+    const { page = 1 } = req.query
+    NarrativeText.aggregatePaginate(aggregate, { page, limit: 12 })
+        .then((narrativeText) => {
+            return res.json(narrativeText)
+        })
+        .catch((errors) => {
+            return res.json(errors)
+        })
+}
+
 NarrativeText.route('index', ['get'], index)
 NarrativeText.route('indexPublic', ['get'], indexPublic)
 NarrativeText.route('indexHistory', ['get'], indexHistory)
 NarrativeText.route('addAlternativeText', ['post'], addAlternativeText)
+NarrativeText.route('searchHistory', ['get'], searchHistory)
 
 module.exports = NarrativeText
 
