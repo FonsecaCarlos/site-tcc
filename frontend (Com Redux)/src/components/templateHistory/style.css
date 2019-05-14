@@ -1,0 +1,85 @@
+.read-wrapper {
+    background-image: url('../../images/art-artist-background-1280.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+.p-editor-toolbar, .p-editor-content, .read-header {
+    width: 90%;
+    margin: 0 auto;
+    background-color: rgb(240, 248, 255);
+}
+
+.p-editor-content {
+    height: 60vh;
+    background-color: rgba(240, 248, 255, .9);
+}
+
+.read-header {
+    display: flex;
+    flex-direction: row;
+    background-color: rgba(240, 248, 255, .0);
+    justify-content: space-between;
+}
+
+.read-header-rigth {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.item-read-header {
+    padding: 10px 15px;
+}
+
+.item-read-header:first-child {
+    padding: 20px 5px 5px 15px;
+}
+
+.item-read-header:last-child {
+    padding: 5px 5px 20px 15px;
+}
+
+.icone-read-wrapper {
+    width: 16px;
+    cursor: pointer;
+    padding: 0 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.icone-read-wrapper p {
+    min-width: initial;
+}
+
+.read-header-actions {
+    display: flex;
+    padding: 15px;
+    width: 90%;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.read-header-alternativeText {
+    padding: 15px;
+    width: 90%;
+    margin: 0 auto;
+} 
+
+.read-header-alternativeLink {
+    display: block;
+    text-decoration: none;
+    color: blue;
+    font-size: .9em;
+    cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+
+}
+
+@media (max-width: 700px) {
+    
+}

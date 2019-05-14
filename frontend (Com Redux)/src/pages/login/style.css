@@ -1,0 +1,42 @@
+.login-wrapper {
+    background-image: url('../../images/book-grass.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-header {
+    background-color: var(--background-color);
+    width: 400px;
+    padding: 50px 50px 10px;
+}
+
+.login-form {
+    background-color: rgba(87, 188, 144, 0.9);
+    width: 400px;
+    padding: 10px 50px 50px;
+}
+
+.login-form p {
+    text-decoration: none;
+    color: black;
+    display: block;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.button-form {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    cursor: pointer;
+    width: 80%;
+    padding: 10px 10px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: none;
+}

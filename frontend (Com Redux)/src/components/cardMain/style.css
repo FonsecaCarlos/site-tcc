@@ -1,0 +1,30 @@
+.box-card {
+    background-color: rgba(24, 97, 89, .9);
+    width: 30%;
+    margin: 5px 0;
+    padding: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: solid 1px #040F0F;
+}
+
+.row-card p {
+    margin: 5px;
+    color: var(--text-color);
+    text-align: justify;
+}
+
+
+@media (max-width: 1000px) {
+    .box-card {
+        width: 45%;
+        margin: 10px 0 0 0;
+    }
+}
+
+@media (max-width: 700px) {
+    .box-card {
+        width: 90%;
+        margin: 10px auto 0;
+    }
+}

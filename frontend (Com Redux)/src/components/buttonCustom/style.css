@@ -1,0 +1,10 @@
+.buttonCustom {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 10px 20px;
+    margin: 5px 10px;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
