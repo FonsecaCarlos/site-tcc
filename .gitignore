@@ -1,3 +1,5 @@
 node_modules
+packege-lock.json
+*.lock
 *.log
 .env
