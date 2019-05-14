@@ -29,7 +29,6 @@ class CreareHistory extends Component {
         const author = Author()._id
         const {title, idHistory} = this.state
         if(idHistory){
-            //adicionar o fitro isMaster na paginação
             const narrativeText = { author, title }
             this.createAlternativeText(narrativeText, idHistory)
         }else{

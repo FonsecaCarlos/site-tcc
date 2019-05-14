@@ -32,9 +32,7 @@ class MainHistory extends Component {
     }
 
     setAuthor = () => {
-        const userKey = '_textNarrative_user'
-        const authorJSON = localStorage.getItem(userKey)
-        const author = JSON.parse(authorJSON)
+        const author = Author()
         this.setState({ author: author })
     }
 
@@ -51,19 +49,21 @@ class MainHistory extends Component {
     }
 
     prevPage = () => {
-        const { pageCount } = this.state
+        const { pageCount, author } = this.state
         if (pageCount === 1) return
 
         const pageNumber = pageCount - 1
-        this.loadMyHistorys( Author(), pageNumber)
+        this.loadMyHistorys( author, pageNumber)
+        //this.loadHistorysPublics(pageNumber)
     }
 
     nextPage = () => {
-        const { pageCount, historysInfo } = this.state
+        const { pageCount, historysInfo, author } = this.state
         if (pageCount === historysInfo.pageCount) return
 
         const pageNumber = pageCount + 1
-        this.loadMyHistorys( Author(), pageNumber)
+        this.loadMyHistorys( author, pageNumber)
+        //this.loadHistorysPublics(pageNumber)
     }
 
     handleClickHistory = (idHistory) => {
