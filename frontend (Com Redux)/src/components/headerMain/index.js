@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { getPublicHistorys, getMyHistorys, searchHistory } from '../../pages/manageHistory/mainActions'
+import { getPublicHistorys, getMyHistorys } from '../../pages/manageHistory/mainActions'
 import { logout } from '../../pages/login/authActions'
 
 import SearchImg from '../../images/search.png'
@@ -12,54 +12,48 @@ import AddImg from '../../images/add.png'
 import './style.css'
 
 class HeaderMain extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            search: ''
-        }
-    }
 
     pesquisar = () => {
-        if (this.state.search==='') return
-
         const { searchHistory, id } = this.props
-        const title = this.state.search
-        searchHistory(id, title)
-        
-        this.setState({search: ''})
-    }
-
-    updateSearch = (e) => {
-        if (e.keyCode===13)
-            return this.pesquisar()
-
-        const search = e.target.value
-        this.setState({ search })
+        searchHistory(id)
     }
 
     render() {
-        const {name, id} = this.props
+        const {name, search, id, method} = this.props
+        
         return (
-            <header className='header-main'>
+            <header id='topo' className='header-main'>
                 <h2 className='header'>{name}</h2>
 
                 <div className='header header-historias'>
                     <div className='header-left'>
                         <input className='header-search' 
-                            onKeyUp={(e) => this.updateSearch(e)}
-                            onChange={(e) => this.updateSearch(e)}
-                            placeholder='Pesquisar' value={this.state.search} readOnly={false}/>
+                            onKeyUp={(e) => this.props.updateSearch(e, id)}
+                            onChange={(e) => this.props.updateSearch(e, id)}
+                            placeholder='Pesquisar' value={search} readOnly={false}/>
                         <input type='image' src={SearchImg} alt='Pesquisar' width='20'
-                            onClick={() => this.pesquisar()} />
+                            onClick={() => this.props.pesquisar(id)}
+                            title='Pesquisar' />
                     </div>
-                    <div className='header-left header-buttons'>
-                        <button className='header-button'
-                            onClick={() => (this.props.getPublicHistorys(id))}>
+                    <div className={`header-left header-buttons`}>
+                        <button className={`header-button ${method==='getPublicHistorys'?
+                            'active':'desactive'}`}
+                            onClick={() => {
+                                    this.props.getPublicHistorys(1, id)
+                                    this.props.clearSearch()
+                                    this.props.initPage()
+                                }
+                            }>
                             Histórias públicas
                         </button>
-                        {/*<button className='header-button'>Histórias compartilhadas</button>*/}
-                        <button className='header-button'
-                            onClick={() => (this.props.getMyHistorys(id))}>
+                        <button className={`header-button ${method==='getMyHistorys'?
+                            'active':'desactive'}`}
+                            onClick={() => {
+                                   this.props.getMyHistorys(1, id)
+                                   this.props.clearSearch()
+                                   this.props.initPage()
+                                }
+                            }>
                             Minhas histórias
                         </button>
 
@@ -72,8 +66,9 @@ class HeaderMain extends Component {
                             pathname: '/createHistory',
                             state: { create: true }
                         }}>
-                            <img src={AddImg} alt='Adicionar história' width='20'
-                                height='20' className='header-button' />
+                            <img src={AddImg} alt='Criar história' width='20'
+                                height='20' className='header-button' 
+                                title='Criar história'/>
                         </Link>
                     </div>
                 </div>
@@ -82,11 +77,11 @@ class HeaderMain extends Component {
     }
 }
 
+const mapStateToProps = state => ({ method: state.narrativeText.method })
 const mapDispatchToProps = dispatch => bindActionCreators({
     getPublicHistorys,
     getMyHistorys,
-    searchHistory,
     logout
 }, dispatch)
 
-export default connect(null, mapDispatchToProps)(HeaderMain)
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderMain)

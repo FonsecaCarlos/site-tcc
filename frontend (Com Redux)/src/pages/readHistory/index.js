@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { getHistory } from '../manageHistory/mainActions'
+import { getHistory, addLike, removeLike, deleteHistory } from '../manageHistory/mainActions'
 
 import TemplateHistory from '../../components/templateHistory'
 
@@ -11,19 +11,11 @@ class ReadHistory extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            home: false,
             edit: false,
             back: false,
             addAlternativeText: false
         }
-    }
-
-    handleEditor = (e) => {
-        this.setState({ text: e.htmlValue })
-    }
-
-    handleIsPublic = (e) => {
-        const isPublic = !this.state.isPublic
-        this.setState({ isPublic })
     }
 
     handleEdit = (e) => {
@@ -41,13 +33,18 @@ class ReadHistory extends Component {
         this.setState({addAlternativeText})
     }
 
-    reloadHistory = ( id ) => {
-        const { auth } = this.props
-        this.props.getHistory(id, auth._id)
+    reloadHistory = ( idHistory, idAuthor ) => {
+        this.props.getHistory( idHistory, idAuthor )
+        this.setState({back: false})
+    }
+
+    deleteHistory = ( idHistory, idAuthor ) => {
+        this.props.deleteHistory( idHistory, idAuthor )
+        this.setState({home: true})
     }
 
     render() {
-        const { edit, back, addAlternativeText } = this.state
+        const { edit, back, home, addAlternativeText } = this.state
         const { history } = this.props.narrativeText
         const { auth } = this.props
 
@@ -60,20 +57,26 @@ class ReadHistory extends Component {
         if (edit)
             return <Redirect to='/writehistory' />
 
+        if (home)
+            return <Redirect to='/' />
+
         if (back)
-            return <Redirect to='/'/>
+            this.reloadHistory(history.historyMaster, auth._id)
 
         return (
             <TemplateHistory handleEdit={this.handleEdit}
-                auth={ auth }
-                history={ { ...history, edit} }
+                history={ { ...history, edit, auth } }
                 handleBack={this.handleBack}
                 reloadHistory={this.reloadHistory}
-                addAlternativeText={this.addAlternativeText} />
+                addAlternativeText={this.addAlternativeText}
+                addLike={this.props.addLike}
+                removeLike={this.props.removeLike}
+                deleteHistory={this.deleteHistory} />
         )
     }
 }
 
 const mapStateToProps = state => ({ auth: state.auth.user, narrativeText: state.narrativeText })
-const mapDispatchToProps = dispatch => bindActionCreators({ getHistory }, dispatch)
+const mapDispatchToProps = dispatch => bindActionCreators({ getHistory, 
+    addLike, removeLike, deleteHistory }, dispatch)
 export default connect(mapStateToProps, mapDispatchToProps)(ReadHistory)

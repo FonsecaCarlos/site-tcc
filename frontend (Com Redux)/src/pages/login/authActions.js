@@ -42,3 +42,36 @@ export function validateToken(token) {
         }
     }
 }
+
+export function forgotPassword(email) {
+    if (email) {
+        axios.post(`${consts.OAPI_URL}/forgotPassword`, { ...email })
+            .then(resp => {
+                toastr.success('Sucesso', resp.data.success)
+            })
+            .catch(e => {
+                e.response.data.errors.forEach(
+                    error => toastr.error('Erro', error))
+            })
+    }
+}
+
+export function resetPassword(values) {
+    const { password, confirm_password  } = values
+
+    if ( password === confirm_password )
+        return dispatch => {
+            axios.post(`${consts.OAPI_URL}/resetPassword`, { ...values })
+                .then(resp => {
+                    dispatch([
+                        { type: 'USER_FETCHED', payload: resp.data }
+                    ])
+                })
+                .catch(e => {
+                    e.response.data.errors.forEach(
+                        error => toastr.error('Erro', error))
+                })
+        }
+    else
+        return dispatch => toastr.error('Erro', 'Senhas não conferem')
+}

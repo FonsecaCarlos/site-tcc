@@ -14,10 +14,11 @@ const NarrativeTextSchema = new mongoose.Schema({
     isPublic: { type: Boolean, default: true},
     isMaster: { type: Boolean, default: true },
     alternativeText: { type: [ObjectId], required: false },
-    sharedWith: { type: [ObjectId], required: false }
+    sharedWith: { type: [ObjectId], required: false },
+    historyMaster: { type: ObjectId, required: false},
+    likes: { type: [ObjectId], required: false}
 })
 
-NarrativeTextSchema.plugin(mongoosePaginate)
 NarrativeTextSchema.plugin(mongooseAggregatePaginate)
 
 module.exports = restful.model('NarrativeText', NarrativeTextSchema)

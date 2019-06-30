@@ -1,6 +1,6 @@
-# Projeto frontend do site
+# Projeto frontend do site com Redux
 
-O projeto foi construido utilizando o [React](https://reactjs.org/). Para execulá-lo em seu computador baixe o repositório e dentro do diretório /frontend execute os seguintes comandos:
+O projeto foi construido utilizando o [React](https://reactjs.org/) e o [Redux](https://redux.js.org/). Para execulá-lo em seu computador baixe o repositório e dentro do diretório /frontend (Com Redux) execute os seguintes comandos:
 
 ```
 $ npm install

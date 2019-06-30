@@ -14,6 +14,7 @@ class CreareHistory extends Component {
         super(props)
         this.state = {
             title: '',
+            text: '',
             create: undefined
         }
     }
@@ -33,12 +34,12 @@ class CreareHistory extends Component {
     handleSubmit = async (e) => {
         e.preventDefault()
         const { auth } = this.props
-        const { title, create } = this.state
-
+        const { title, create, text } = this.state
+        
         if(title===''){
             toastr.error('Erro', 'Informe o título do texto!')
         }else{
-            const narrativeText = { author: { ...auth }, title }
+            const narrativeText = { author: { ...auth }, title, text }
     
             if (create) {
                 this.props.postHistory(narrativeText)
@@ -55,7 +56,6 @@ class CreareHistory extends Component {
         
         if (created)
             return <Redirect to='/writehistory' />
-
 
         return (
             <div className="create-history-wrapper">

@@ -13,3 +13,18 @@
 .bt-danger {
   background-color: rgba(255, 20, 20, 0.9)
 }
+
+
+/* Código da internet para alterar a cor do Placeholder */
+/*::-webkit-input-placeholder {
+  color: var(--text-color);
+}
+:-moz-placeholder {
+  color: var(--text-color);
+}
+::-moz-placeholder {
+  color: var(--text-color);
+}
+:-ms-input-placeholder {  
+  color: var(--text-color);
+}*/

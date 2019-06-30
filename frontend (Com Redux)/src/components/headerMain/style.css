@@ -35,7 +35,20 @@
     font-size: 1em;
     outline: none; /*Retira o focus do input quando selecionado, evitar de aparecer as bordas*/
     border: none; /*Retira as bordas do input*/
-    border-bottom: solid 1px aliceblue; /*Coloca borda somente na parte de baixo*/
+    border-bottom: solid 1px aliceblue; /*Coloca borda somente na parte de baixo*/   
+}
+/*Código para alterar a cor do placeholder*/
+.header-search::-webkit-input-placeholder {
+    color: var(--text-color);
+}
+.header-search:-moz-placeholder {
+    color: var(--text-color);
+}
+.header-search::-moz-placeholder {
+    color: var(--text-color);
+}
+.header-search:-ms-input-placeholder {  
+    color: var(--text-color);
 }
 
 .header-buttons {
@@ -55,7 +68,18 @@
 	outline: inherit;
 }
 
+.active {
+    background: rgba(1, 60, 54, .9);
+    font-size: 1.2em;
+    padding: 5px 15px;
+    border-radius: 5px;
+}
 
+.desactive {
+    background: none;
+    font-size: 1em;
+    padding: 0;
+}
 
 @media (max-width: 1000px) {
     .header-main {

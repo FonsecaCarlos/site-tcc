@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 
+import { toastr } from 'react-redux-toastr'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { putHistory, getHistory, setCreated } from '../manageHistory/mainActions'
@@ -22,7 +23,7 @@ class WriteHistory extends Component {
 
     componentDidMount() {
         const { text, isPublic} = this.props.narrativeText.history
-        this.setState({ text, isPublic}) 
+        this.setState({ text, isPublic})
         this.props.setCreated(false)
     }
 
@@ -34,10 +35,17 @@ class WriteHistory extends Component {
 
     handleIsPublic = (e) => {
         const isPublic = !this.state.isPublic
-        this.setState({isPublic})
+        this.setState({isPublic, isModifed: true})
     }
 
     handleBack = (e) => {
+        const { isModifed } = this.state
+        
+        if(isModifed){
+            toastr.error('Aviso', 'Salve as alterações')
+            return
+        }
+        
         const back = !this.state.back
         this.setState({back})
     }
@@ -45,20 +53,29 @@ class WriteHistory extends Component {
     save = async() => {
         const { text, isPublic } = this.state
         let { _id } = this.props.narrativeText.history
+        const { auth } = this.props
 
-        this.props.putHistory(_id, { text, isPublic})
+        this.props.putHistory( auth._id, { _id, text, isPublic})
         
         this.setState({isModifed: false})
     }
 
     addAlternativeText = (e) => {
+        const { isModifed } = this.state
+        
+        if(isModifed){
+            toastr.error('Aviso', 'Salve as alterações')
+            return
+        }        
+
         const addAlternativeText = !this.state.addAlternativeText
         this.setState({addAlternativeText})
     }
 
-    render() { 
-        const { back, addAlternativeText, edit, text, isPublic, isModifed } = this.state
+    render() {
+        const { back, addAlternativeText, text, edit, isPublic, isModifed } = this.state
         const { history } = this.props.narrativeText
+        const { auth } = this.props
 
         if (addAlternativeText)
             return <Redirect to={{
@@ -68,12 +85,12 @@ class WriteHistory extends Component {
 
         if (back)
             return <Redirect to='/readhistory'/>
-
+        
         return ( 
             <TemplateHistory handleBack={this.handleBack}
                 handleEditor={this.handleEditor}
                 handleIsPublic={this.handleIsPublic} 
-                history={ {...history, text, isPublic, edit, isModifed} }
+                history={ {...history, text, isPublic, edit, isModifed, auth} }
                 save={this.save}
                 addAlternativeText={this.addAlternativeText} />
          )
