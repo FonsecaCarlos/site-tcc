@@ -1,27 +1,19 @@
 import React, { Component } from 'react'
-import api from '../../services/api'
+
+import likedImage from '../../images/liked.png'
+import likeImage from '../../images/like.png'
 
 class AlternativeLink extends Component {
-    state = {
-        history: {}
-    }
-        
-
-    componentDidMount() {
-        this.getHistory(this.props._id)
-    }
-
-    getHistory = async (_id) => {
-        const resp = await api.get(`/narrativeText/${_id}`)
-        const history = resp.data
-        this.setState({ history })
-    }
-
     render() {
-        const { title } = this.state.history
-
+        const { likes, liked, title } = this.props.alternativeText
+        
         return (
-            <p {...this.props}  >{ title }</p>
+            <div onClick={this.props.onClick} className='read-header-alternativeLink'>
+                <span>{likes}</span>
+                <img src={liked ? likedImage : likeImage}
+                            alt={liked ? 'Descurtir' : 'Curtir'} />
+                <p>{ title }</p>
+            </div>
         )
     }
 }

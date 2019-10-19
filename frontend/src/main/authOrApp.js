@@ -6,6 +6,8 @@ import App from './app'
 import Auth from '../pages/login'
 import { validateToken } from '../pages/login/authActions'
 
+import Messages from '../components/messages'
+
 import './style.css'
 
 class AuthOrApp extends Component {
@@ -21,7 +23,12 @@ class AuthOrApp extends Component {
             axios.defaults.headers.common['authorization'] = user.token
             return <App>{this.props.children}</App>
         } else if (!user && !validToken) {
-            return <Auth />
+            return (
+                <div>
+                    <Auth />
+                    <Messages />
+                </div>
+            )
         } else {
             return false
         }

@@ -1,11 +1,12 @@
 import React from 'react'
+
 import ReduxToastr from 'react-redux-toastr'
-//componente para exibir mensagens de erro e de sucesso
+
 import 'react-redux-toastr/lib/css/react-redux-toastr.min.css'
 
 export default props => (
     <ReduxToastr
-        timeOut={4000}
+        timeOut={2000}
         newestOnTop={false}
         preventDuplicates={true}
         position='top-right'

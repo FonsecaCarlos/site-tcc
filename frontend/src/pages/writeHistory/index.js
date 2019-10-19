@@ -1,44 +1,31 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import api from '../../services/api'
+import { toastr } from 'react-redux-toastr'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { putHistory, getHistory, setCreated, deleteHistory } from '../manageHistory/mainActions'
 
 import TemplateHistory from '../../components/templateHistory'
 
 class WriteHistory extends Component {
     constructor(props) {
         super(props)
-        this.state = { 
-            alternativeText: [],
-            author: '',
-            createdAt: null,
-            isPublic: true,
-            status: '',
+        this.state = {
             text: '',
-            title: '',
-            _id: null,
+            isPublic: true, 
             edit: true,
             back: false,
             addAlternativeText: false,
-            isModifed: false
+            isModifed: false,
+            home: false
          }
     }
 
     componentDidMount() {
-        const { ...id } = this.props.location.state
-        const idHistory = id['_id']
-        this.loadHistory(idHistory)
-        this.setState({isModifed: false})
-    }
-
-    loadHistory = async (id) => {
-        const userKey = '_textNarrative_user'
-        const authorJSON = localStorage.getItem(userKey)
-        const author = JSON.parse(authorJSON)
-        const response = await api.get(`/narrativeText/indexHistory?_id=${id}&author=${author._id}`)
-        //tenho que pegar a history assim por conta do aggregatepaginate
-        const history = response.data.data[0]
-        this.setState({ isModifed: false, ...history })
+        const { text, isPublic} = this.props.narrativeText.history
+        this.setState({ text, isPublic})
+        this.props.setCreated(false)
     }
 
     handleEditor = (e) => {
@@ -49,50 +36,82 @@ class WriteHistory extends Component {
 
     handleIsPublic = (e) => {
         const isPublic = !this.state.isPublic
-        this.setState({isPublic})
+        this.setState({isPublic, isModifed: true})
     }
 
     handleBack = (e) => {
+        const { isModifed } = this.state
+        
+        if(isModifed){
+            toastr.error('Aviso', 'Salve as alterações')
+            return
+        }
+        
         const back = !this.state.back
         this.setState({back})
     }
 
-    save = async () => {
-        const { _id, text, isPublic} = this.state
-        const resp = await api.put(`/narrativeText/${_id}`, { _id, text, isPublic})
-        const history = resp.data
-        this.loadHistory(history._id)
+    save = async() => {
+        const { text, isPublic } = this.state
+        let { _id } = this.props.narrativeText.history
+        const { auth } = this.props
+
+        this.props.putHistory( auth._id, { _id, text, isPublic})
+        
+        this.setState({isModifed: false})
     }
 
     addAlternativeText = (e) => {
+        const { isModifed } = this.state
+        
+        if(isModifed){
+            toastr.error('Aviso', 'Salve as alterações')
+            return
+        }        
+
         const addAlternativeText = !this.state.addAlternativeText
         this.setState({addAlternativeText})
     }
 
-    render() { 
-        const { back, _id, addAlternativeText } = this.state
+    deleteHistory = ( idHistory, idAuthor ) => {
+        this.props.deleteHistory( idHistory, idAuthor )
+        this.setState({home: true})
+    }
+
+    render() {
+        const { back, addAlternativeText, text, edit, isPublic, isModifed, home } = this.state
+        const { history } = this.props.narrativeText
+        const { auth } = this.props
 
         if (addAlternativeText)
-            return <Redirect push to={{
-                pathname: "/createhistory",
-                state: { _id }
+            return <Redirect to={{
+                pathname: '/createHistory',
+                state: {create: false}
             }} />
 
         if (back)
-            return <Redirect push to={{
-                pathname: "/readhistory",
-                state: { _id }
-            }} />
-
-        return ( 
+            return <Redirect to='/readhistory'/>
+        
+        if (home)
+            return <Redirect to='/' />
+        
+            return ( 
             <TemplateHistory handleBack={this.handleBack}
                 handleEditor={this.handleEditor}
                 handleIsPublic={this.handleIsPublic} 
-                history={ this.state }
+                history={ {...history, text, isPublic, edit, isModifed, auth} }
                 save={this.save}
-                addAlternativeText={this.addAlternativeText} />
+                addAlternativeText={this.addAlternativeText}
+                deleteHistory={this.deleteHistory} />
          )
     }
 }
  
-export default WriteHistory
+const mapStateToProps = state => ({ auth: state.auth.user, narrativeText: state.narrativeText })
+const mapDispatchToProps = dispatch => bindActionCreators({
+    putHistory,
+    getHistory,
+    setCreated,
+    deleteHistory
+}, dispatch)
+export default connect(mapStateToProps, mapDispatchToProps)(WriteHistory)

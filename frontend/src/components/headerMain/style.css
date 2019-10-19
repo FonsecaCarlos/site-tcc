@@ -1,5 +1,6 @@
 .header-main {
-    background-color: var(--background-color);
+    /*background-color: rgba(4, 15, 15, .9);*/
+    background-color: rgba(1, 60, 54, .9);
     margin: 10px 40px;
     width: auto;
     color: aliceblue;
@@ -7,6 +8,8 @@
     align-items: center;
     justify-content: space-between;
     min-height: 100px;
+    border-radius: 5px;
+    border: solid 2px #040F0F;
 }
 
 .header {
@@ -32,7 +35,20 @@
     font-size: 1em;
     outline: none; /*Retira o focus do input quando selecionado, evitar de aparecer as bordas*/
     border: none; /*Retira as bordas do input*/
-    border-bottom: solid 1px aliceblue; /*Coloca borda somente na parte de baixo*/
+    border-bottom: solid 1px aliceblue; /*Coloca borda somente na parte de baixo*/   
+}
+/*Código para alterar a cor do placeholder*/
+.header-search::-webkit-input-placeholder {
+    color: var(--text-color);
+}
+.header-search:-moz-placeholder {
+    color: var(--text-color);
+}
+.header-search::-moz-placeholder {
+    color: var(--text-color);
+}
+.header-search:-ms-input-placeholder {  
+    color: var(--text-color);
 }
 
 .header-buttons {
@@ -52,7 +68,18 @@
 	outline: inherit;
 }
 
+.active {
+    background: rgba(1, 60, 54, .9);
+    font-size: 1.2em;
+    padding: 5px 15px;
+    border-radius: 5px;
+}
 
+.desactive {
+    background: none;
+    font-size: 1em;
+    padding: 0;
+}
 
 @media (max-width: 1000px) {
     .header-main {

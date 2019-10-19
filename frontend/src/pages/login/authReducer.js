@@ -1,22 +1,25 @@
-const userKey = '_textNarrative_user'
+import consts from '../../consts'
 
 const INITIAL_STATE = {
-    user: JSON.parse(localStorage.getItem(userKey)),
-    validToken: false
+    user: JSON.parse(localStorage.getItem(consts.USER_KEY)),
+    validToken: false,
+    reset: false
 }
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case 'TOKEN_VALIDATED':
+        case consts.TOKEN_VALIDATED:
             if (action.payload) {
                 return { ...state, validToken: true }
             } else {
-                localStorage.removeItem(userKey)
+                localStorage.removeItem(consts.USER_KEY)
                 return { ...state, validToken: false, user: null }
             }
-        case 'USER_FETCHED':
-            localStorage.setItem(userKey, JSON.stringify(action.payload))
+        case consts.USER_FETCHED:
+            localStorage.setItem(consts.USER_KEY, JSON.stringify(action.payload))
             return { ...state, user: action.payload, validToken: true }
+        case consts.USER_RESET:
+            return { ...state, reset: action.payload }
         default:
             return state
     }

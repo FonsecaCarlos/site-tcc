@@ -9,11 +9,17 @@
 }
 
 .main-cards {
-    display: flex;
+    /*display: flex;
     flex-flow: row;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding: 0 40px;
+    padding: 0 40px;*/
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    justify-content: space-between;
+    margin: 10px 40px;
+    width: auto;
 }
 
 .actions {

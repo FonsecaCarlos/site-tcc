@@ -1,10 +1,14 @@
 .box-card {
-    background-color: var(--background-color);
-    width: 30%;
-    margin: 5px 0;
+    background-color: rgba(24, 97, 89, .9);
+    /*width: 30%;*/
+    margin: 5px;
     padding: 15px;
     border-radius: 5px;
     cursor: pointer;
+    border: solid 1px #040F0F;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .row-card p {
@@ -13,17 +17,30 @@
     text-align: justify;
 }
 
+.row-card-custom {
+    display: flex;
+    justify-content: space-between;
+}
+
+.icone-row-card {
+    width: 16px;
+    cursor: pointer;
+    padding: 0 5px;
+    text-decoration: none;
+    color: black;
+}
+
 
 @media (max-width: 1000px) {
     .box-card {
-        width: 45%;
-        margin: 10px 0 0 0;
+        /*width: 45%;*/
+        /*margin: 10px 0 0 0;*/
     }
 }
 
 @media (max-width: 700px) {
     .box-card {
-        width: 90%;
-        margin: 10px auto 0;
+        /*width: 90%;*/
+        /*margin: 10px auto 0;*/
     }
 }

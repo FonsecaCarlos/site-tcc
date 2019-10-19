@@ -16,38 +16,88 @@ const sendErrorsFromDB = (res, dbErrors) => {
     return res.status(400).json({ errors })
 }
 
+/**
+ * @swagger
+ * /oapi/login:
+ *    post:
+ *      description: Efetuar autenticação do usuário. Retorna => { name, email, _id, token }
+ *      tags:
+ *          - Usuários
+ *      summary: Efetuar autenticação do usuário
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: body
+ *            description: Obrigatório apenas => email e password.
+ *            required: true
+ *            schema:
+ *                $ref: '#/definitions/User'
+ *      responses:
+ *          200:
+ *              description: Usuário autenticado.
+ *          400:
+ *              description: Usuário/Senha inválidos.
+ */
 const login = (req, res, next) => {
     const email = req.body.email || ''
     const password = req.body.password || ''
 
-    User.findOne({ email }, (err, user) => {
-        if (err) {
-            return sendErrorsFromDB(res, err)
-        } else if (user && bcrypt.compareSync(password, user.password)) {
-            const token = jwt.sign({ ...user }, env.authSecret, {
-                expiresIn: "1 day"
-            })
-            const { name, email, _id } = user
-            res.json({ name, email, _id, token })
-        } else {
-            return res.status(400).send({ errors: ['Usuário/Senha inválidos'] })
-        }
-    })
+    try {
+        User.findOne({ email }, (err, user) => {
+            if (err) {
+                return sendErrorsFromDB(res, err)
+            } else if (user && bcrypt.compareSync(password, user.password)) {
+                const token = jwt.sign({ ...user }, env.AUTH_SECRET, {
+                    expiresIn: "1 day"
+                })
+                const { name, email, _id } = user
+                res.json({ name, email, _id, token })
+            } else {
+                return res.status(400).send({ errors: ['Usuário/Senha inválidos'] })
+            }
+        })
+    } catch (e) {
+        return res.status(400).send({ errors: ['Não foi possível efetuar autenticação. Por favor, tente novamente!'] })
+    }
 }
 
 const validateToken = (req, res, next) => {
     const token = req.body.token || ''
 
-    jwt.verify(token, env.authSecret, function (err, decoded) {
+    jwt.verify(token, env.AUTH_SECRET, function (err, decoded) {
         return res.status(200).send({ valid: !err })
     })
 }
 
+/**
+ * @swagger
+ * /oapi/signup:
+ *    post:
+ *      description: Cadastrar usuário
+ *      tags:
+ *          - Usuários
+ *      summary: Cadastrar um novo usuário
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: body
+ *            description: Obrigatório apenas => name, email, password e confirmPasssword.
+ *            required: true
+ *            schema:
+ *                $ref: '#/definitions/User'
+ *      responses:
+ *          '200':
+ *              description: Usuário cadastrado
+ *          '400':
+ *              description: Usuário não cadastrado
+ */
 const signup = (req, res, next) => {
     const name = req.body.name || ''
     const email = req.body.email || ''
     const password = req.body.password || ''
-    const confirmPassword = req.body.confirm_password || ''
+    const confirmPassword = req.body.confirm_password || req.body.confirmPassword || ''
 
     if (!email.match(emailRegex)) {
         return res.status(400).send({ errors: ['O e-mail informado está inválido'] })
@@ -86,6 +136,29 @@ const signup = (req, res, next) => {
     })
 }
 
+/**
+ * @swagger
+ * /oapi/forgotPassword:
+ *    post:
+ *      description: Usuário esqueceu a senha - solicitar acesso.
+ *      tags:
+ *          - Usuários
+ *      summary: Usuário esqueceu a senha
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: body
+ *            description: Obrigatório apenas => email.
+ *            required: true
+ *            schema:
+ *                $ref: '#/definitions/User'
+ *      responses:
+ *          200:
+ *              description: E-mail enviado com as orientações para redefinir a senha.
+ *          400:
+ *              description: Usuário não encontrado.
+ */
 const forgotPassword = (req, res, next) => {
     const email = req.body.email || ''
 
@@ -106,33 +179,56 @@ const forgotPassword = (req, res, next) => {
                     emailService(user.email, token)
                     return res.json({ success: 'Verifique sua caixa de e-mail.' })
                 } catch (errors) {
-                    return res.status(400).json({ errors: [errors] })
+                    return res.status(400).send({ errors: [errors] })
                 }
             } else {
-                return res.status(400).json({ errors: ['Usuário não encontrado.'] })
+                return res.status(400).send({ errors: ['Usuário não encontrado.'] })
             }
         })
     } catch (error) {
-        res.status(400).json({ errors: ['Erro ao recuperar senha. Por favor, tente novamente!'] })
+        res.status(400).send({ errors: ['Erro ao recuperar senha. Por favor, tente novamente!'] })
     }
 }
 
-const resetPassword = async (req, res, next) => {
-    const email = req.body.email || ''
-    const password = req.body.password || ''
-    const token = req.body.token || ''
-    
+/**
+ * @swagger
+ * /oapi/resetPassword:
+ *    post:
+ *      description: Alterar senha do usuário. O usuário deve checar sua caixa e e-mail e fornecer o token recebido
+ *      tags:
+ *          - Usuários
+ *      summary: Alterar senha do usuário.
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: body
+ *            description: Obrigatório apenas => { email, password e token}.
+ *            required: true
+ *            schema:
+ *                $ref: '#/definitions/User'
+ *      responses:
+ *          200:
+ *              description: Nova senha cadastrada com sucesso.
+ *          400:
+ *              description: Não foi possível alterar a senha.
+ */
+const resetPassword = (req, res, next) => {
+    const { email = '', password = '', token = '' } = req.body
+    //const  password = req.body.password || ''
+    //const token = req.body.token || ''
+
     try {
         User.findOne({ email })
             .select('+passwordResetToken passwordResetExpires')
             .exec((error, user) => {
                 if (token !== user.passwordResetToken)
-                    return res.status(400).json({ errors: ['Token inválido!'] })
+                    return res.status(400).send({ errors: ['Token inválido!'] })
 
                 const now = new Date()
 
                 if (now > user.passwordResetExpires)
-                    return res.status(400).json({ errors: ['Token expidado. Por favor, crie um novo token!'] })
+                    return res.status(400).send({ errors: ['Token expidado. Por favor, crie um novo token!'] })
 
                 if (!password.match(passwordRegex)) {
                     return res.status(400).send({
@@ -155,7 +251,7 @@ const resetPassword = async (req, res, next) => {
                 })
             })
     } catch (error) {
-        res.status(400).json({ errors: ['Erro ao resetar senha. Por favor, tente novamente!'] })
+        res.status(400).send({ errors: ['Erro ao resetar senha. Por favor, tente novamente!'] })
     }
 }
 

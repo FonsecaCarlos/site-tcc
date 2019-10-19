@@ -1,110 +1,159 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import api from '../../services/api'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { getPublicHistorys, getHistory, getMyHistorys, searchHistory, setSearch } from './mainActions'
+
 import HeaderMain from '../../components/headerMain'
 import CardMain from '../../components/cardMain'
 import ButtonCustom from '../../components/buttonCustom'
-import Author from '../../services/authorFromLocalStorage'
 
 import './style.css'
 
 class MainHistory extends Component {
-
     constructor(props) {
         super(props)
         this.state = {
-            idHistory: null,
+            search: '',
+            idHistory: '',
             redirect: false,
-            historys: [],
-            historysInfo: {
-                pageCount: 1
-            },
-            pageCount: 1,
-            author: {}
+            page: 1
         }
     }
 
+    initPage = () => {
+        this.setState({page: 1})
+    }
+
+    clearSearch = () => {
+        this.setState({ search: '' })
+        setSearch('')
+    }
+
     componentDidMount() {
-        this.setAuthor()
-        //this.loadHistorysPublics()
-        this.loadMyHistorys( Author() )
+        const { auth, narrativeText } = this.props
+        const { method, search } = narrativeText
+        
+        this.setState({ search })
+        const { page } = this.state
+        
+        this.props[method](page, auth._id, search)
     }
 
-    setAuthor = () => {
-        const author = Author()
-        this.setState({ author: author })
+    handleClickHistory = (idHistory, idAuthor) => {
+        this.props.getHistory(idHistory, idAuthor)
+        this.setState({ redirect: true })
     }
 
-    loadMyHistorys = async (author, pageCount = 1) => {
-        const response = await api.get(`/narrativeText/index?page=${pageCount}&_id=${author._id}`)
-        const { data, ...historysInfo  } = response.data
-        this.setState({ historys: data, historysInfo, pageCount })
-    }
-
-    loadHistorysPublics = async (pageCount = 1) => {
-        const response = await api.get(`/narrativeText/indexPublic?page=${pageCount}`)
-        const { data, ...historysInfo } = response.data
-        this.setState({ historys: data, historysInfo, pageCount })
+    //codigo da internet
+    redirectView = (elem) => {
+        window.scroll({
+            top: document.querySelector(elem),
+            behavior: 'auto'// smooth - tem um animação
+        });
     }
 
     prevPage = () => {
-        const { pageCount, author } = this.state
-        if (pageCount === 1) return
+        const { page, search } = this.state
+        if (page === 1) return
 
-        const pageNumber = pageCount - 1
-        this.loadMyHistorys( author, pageNumber)
-        //this.loadHistorysPublics(pageNumber)
+        const pageNumber = page - 1
+        const { auth, narrativeText } = this.props
+        const { method } = narrativeText
+        this.props[method](pageNumber, auth._id, search)
+        this.setState({ page: pageNumber })
+
+        this.redirectView('topo')
     }
 
     nextPage = () => {
-        const { pageCount, historysInfo, author } = this.state
-        if (pageCount === historysInfo.pageCount) return
+        const { page, search } = this.state
+        const { pageCount } = this.props.narrativeText.historys
+        if (page === pageCount) return
 
-        const pageNumber = pageCount + 1
-        this.loadMyHistorys( author, pageNumber)
-        //this.loadHistorysPublics(pageNumber)
+        const pageNumber = page + 1
+        const { auth, narrativeText } = this.props
+        const { method } = narrativeText
+        this.props[method](pageNumber, auth._id, search)
+        this.setState({ page: pageNumber })
+
+        this.redirectView('topo')
     }
 
-    handleClickHistory = (idHistory) => {
-        this.setState({ redirect: true, idHistory })
+    pesquisar = (id) => {
+        if (this.state.search === '') return
+
+        const { searchHistory } = this.props
+        const search = this.state.search
+        searchHistory(1, id, search)
+        this.initPage()
+    }
+
+    updateSearch = (e, id) => {
+        const search = e.target.value
+
+        if (e.keyCode === 13){
+            return this.pesquisar(id)
+        }
+
+        this.props.setSearch(search)
+        this.setState({search})
     }
 
     render() {
-        const { historys, pageCount, historysInfo, redirect, idHistory, author } = this.state
-        
+        const { redirect, page, search } = this.state
+        const { auth, narrativeText } = this.props
+        const { data, pageCount } = narrativeText.historys
+
         if (redirect)
-            return <Redirect push to={{
-                pathname: "/readhistory",
-                state: { _id: idHistory }
-            }} />
-        
+            return <Redirect to='/readhistory' />
+
         return (
             <div className='main-wrapper'>
-                <HeaderMain name={author.name} publicHistory={this.loadHistorysPublics}/>
-                
+                <HeaderMain initPage={this.initPage}
+                    searchHistory={this.searchHistory}
+                    clearSearch={this.clearSearch}
+                    pesquisar={this.pesquisar}
+                    search={search}
+                    updateSearch={this.updateSearch}
+                    name={auth.name}
+                    id={auth._id} />
                 <div className='main-cards'>
-                    {historys.map(history => (
+                    {data.map(history => (
                         <CardMain key={history._id}
                             title={history.title}
                             author={history.author}
                             text={history.text}
                             createdAt={history.createdAt}
-                            click={() => this.handleClickHistory(history._id)} />
+                            likes={history.likes}
+                            liked={history.liked}
+                            click={() => this.handleClickHistory(history._id, auth._id)} />
                     ))}
                 </div>
-                
+
                 <div className='actions'>
-                    <ButtonCustom disabled={pageCount === 1} 
-                        className={ pageCount === 1 ? 'grey' : '' }
-                        onClick={this.prevPage} label='Anterior'/>
-                    <ButtonCustom disabled={pageCount === historysInfo.pageCount} 
-                        className={ pageCount === historysInfo.pageCount ? 'grey' : '' }
-                        onClick={this.nextPage} label='Próximo'/>
+                    <ButtonCustom disabled={page === 1}
+                        className={page === 1 ? 'grey' : ''}
+                        onClick={this.prevPage} label='Anterior' />
+                    <ButtonCustom disabled={page === pageCount}
+                        className={page === pageCount ? 'grey' : ''}
+                        onClick={this.nextPage} label='Próximo' />
                 </div>
             </div>
         )
     }
 }
 
-export default MainHistory
+const mapStateToProps = state => ({
+    auth: state.auth.user,
+    narrativeText: state.narrativeText
+})
+const mapDispatchToProps = dispatch => bindActionCreators({
+    getPublicHistorys,
+    getHistory,
+    getMyHistorys,
+    searchHistory,
+    setSearch
+}, dispatch)
+export default connect(mapStateToProps, mapDispatchToProps)(MainHistory)

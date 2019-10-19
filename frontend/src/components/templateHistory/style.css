@@ -6,15 +6,22 @@
     min-height: 100vh;
 }
 
-.p-editor-toolbar, .p-editor-content, .read-header {
+.p-editor-toolbar, .p-editor-content, .read-header, .read-box {
     width: 90%;
     margin: 0 auto;
     background-color: rgb(240, 248, 255);
 }
 
-.p-editor-content {
+.p-editor-content, .read-box {
     height: 60vh;
     background-color: rgba(240, 248, 255, .9);
+}
+
+.read-box {
+    border: solid 1px #3d3d3d;
+    border-radius: 5px;
+    padding: 10px;
+    overflow:scroll;
 }
 
 .read-header {
@@ -43,9 +50,24 @@
 }
 
 .icone-read-wrapper {
-    width: 16px;
-    padding: 0 10px;
+    width: 20px;
     cursor: pointer;
+    padding: 0 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.icone-read-wrapper p {
+    min-width: initial;
+}
+
+.icone-read-wrapper-custom img {
+    padding: 0 0 0 5px;
+}
+
+.icone-read-wrapper-custom {
+    padding: 0 10px;
+    font-size: 1.5em;
 }
 
 .read-header-actions {
@@ -63,11 +85,25 @@
 } 
 
 .read-header-alternativeLink {
-    display: block;
+    display: flex;
     text-decoration: none;
     color: blue;
     font-size: .9em;
     cursor: pointer;
+    height: 20px;
+}
+
+.read-header-alternativeLink p {
+    padding: 0 20px;
+}
+
+.read-header-alternativeLink span {
+    padding: 0 5px;
+}
+
+.read-header-alternativeLink img {
+    width: 16px;
+    height: 16px;
 }
 
 @media (max-width: 1000px) {

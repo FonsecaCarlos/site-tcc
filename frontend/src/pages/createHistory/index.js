@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { toastr } from 'react-redux-toastr'
+import { postAlternativeText, postHistory, setCreated } from '../manageHistory/mainActions'
 
 import { Link, Redirect } from 'react-router-dom'
 import InputCustom from '../../components/inputCustom'
-import Author from '../../services/authorFromLocalStorage'
-import api from '../../services/api'
 
 import './style.css'
 
@@ -12,10 +14,15 @@ class CreareHistory extends Component {
         super(props)
         this.state = {
             title: '',
-            _id: '',
-            created: false,
-            idHistory: this.props.location.state._id
+            text: '',
+            create: undefined
         }
+    }
+
+    componentDidMount() {
+        const { create } = this.props.location.state
+        this.setState({ create })
+        this.props.setCreated(false)
     }
 
     handleChange = (e) => {
@@ -24,57 +31,46 @@ class CreareHistory extends Component {
         this.setState({ title })
     }
 
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault()
-        const author = Author()._id
-        const {title, idHistory} = this.state
-        if(idHistory){
-            const narrativeText = { author, title }
-            this.createAlternativeText(narrativeText, idHistory)
+        const { auth } = this.props
+        const { title, create, text } = this.state
+        
+        if(title===''){
+            toastr.error('Erro', 'Informe o título do texto!')
         }else{
-            const narrativeText = { author, title }
-            this.createHistory(narrativeText)
+            const narrativeText = { author: { ...auth }, title, text }
+    
+            if (create) {
+                this.props.postHistory(narrativeText)
+            } else {
+                const idHistory = this.props.narrativeText.history._id
+                this.props.postAlternativeText(idHistory, narrativeText)
+            }
         }
     }
 
-    createAlternativeText = async ( narrativeText, idHistory ) => {
-        api.post(`/narrativeText/addAlternativeText`, {narrativeText, idHistory} )
-        .then((resp) => {
-            const _id = resp.data._id
-            this.setState({_id, created: true}) 
-        })
-        .catch((error) => console.log(error))
-    }
-
-    createHistory = async ( narrativeText ) => {
-        api.post(`/narrativeText`, narrativeText )
-        .then((resp) => this.setState({_id: resp.data._id, created: true}) )
-        .catch((error) => console.log(error))
-    }
-
     render() {
-        const { created, _id, idHistory } = this.state
+        const { create } = this.state
+        const { created } = this.props.narrativeText
         
         if (created)
-            return <Redirect push to={{
-                pathname: "/writehistory",
-                state: { _id }
-            }} />
-        
+            return <Redirect to='/writehistory' />
 
         return (
             <div className="create-history-wrapper">
                 <div>
                     <div className='create-history-header'>
-                        { idHistory ? <h1>Criar Enredo Alternativo</h1> : 
-                            <h1>Criar História</h1> }
+                        {create ? <h1>Criar História</h1> :
+                            <h1>Criar Enredo Alternativo</h1>}
                     </div>
                     <div className="create-history-form">
                         <form onSubmit={this.handleSubmit}>
 
-                            <InputCustom onChange={this.handleChange} 
+                            <InputCustom onChange={this.handleChange}
                                 type="input"
-                                placeholder="Titulo" />
+                                placeholder={create ? 'Título' :
+                                    'Texto para tomada de decisão'} />
 
                             <div className='create-history-box-button-form'>
                                 <Link to={'/'} className="create-history-button-form bt-danger">
@@ -93,4 +89,10 @@ class CreareHistory extends Component {
     }
 }
 
-export default CreareHistory
+const mapStateToProps = state => ({ auth: state.auth.user, narrativeText: state.narrativeText })
+const mapDispatchToProps = dispatch => bindActionCreators({
+    postAlternativeText,
+    postHistory,
+    setCreated
+}, dispatch)
+export default connect(mapStateToProps, mapDispatchToProps)(CreareHistory)

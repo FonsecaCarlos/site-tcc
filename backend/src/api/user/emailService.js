@@ -1,7 +1,8 @@
-const helper = require('sendgrid').mail
-const from_email = new helper.Email('carlos.fonseca@novaandradina.org')
-const subject = 'Recuperar Senha'
 const env = require('../../.env')
+
+const helper = require('sendgrid').mail
+const from_email = new helper.Email(env.EMAIL)
+const subject = 'Recuperar Senha'
 
 const emailService = (to, token) => {
     const to_email = new helper.Email(to)
