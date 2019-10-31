@@ -35,8 +35,19 @@ class WriteHistory extends Component {
     }
 
     handleIsPublic = (e) => {
-        const isPublic = !this.state.isPublic
-        this.setState({isPublic, isModifed: true})
+        const { isPublic } = this.state
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.setState({isPublic: !isPublic, isModifed: true})
+            },
+            onCancel: () => {}
+        }
+        if(!isPublic)
+            toastr.confirm('Deseja tornar história pública? Todos poderão visualizá-la.',
+                toastrConfirmOptions)
+        else
+            toastr.confirm('Deseja tornar história privada? Apenas você poderá visualizá-la.',
+                toastrConfirmOptions)
     }
 
     handleBack = (e) => {
@@ -74,8 +85,14 @@ class WriteHistory extends Component {
     }
 
     deleteHistory = ( idHistory, idAuthor ) => {
-        this.props.deleteHistory( idHistory, idAuthor )
-        this.setState({home: true})
+        const toastrConfirmOptions = {
+            onOk: () => {
+                this.props.deleteHistory( idHistory, idAuthor )
+                this.setState({home: true})
+            },
+            onCancel: () => {}
+        }
+        toastr.confirm('Deseja realmente remover a história?', toastrConfirmOptions)        
     }
 
     render() {
@@ -95,7 +112,7 @@ class WriteHistory extends Component {
         if (home)
             return <Redirect to='/' />
         
-            return ( 
+        return ( 
             <TemplateHistory handleBack={this.handleBack}
                 handleEditor={this.handleEditor}
                 handleIsPublic={this.handleIsPublic} 

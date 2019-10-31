@@ -38,7 +38,7 @@ export default class Template extends Component {
             return(
                 <Redirect to='/'/>
             )
-
+        
         return (
             <div className='read-wrapper'>
                 <div className='read-header'>
@@ -49,12 +49,13 @@ export default class Template extends Component {
     
                     <div className='read-header-rigth'>
     
-                        
-                        <img src={homeImage}
-                            className='icone-read-wrapper'
-                            alt='Home'
-                            title='Início'
-                            onClick={ this.handleHome } />
+                        { edit ? null :
+                            <img src={homeImage}
+                                className='icone-read-wrapper'
+                                alt='Home'
+                                title='Início'
+                                onClick={ this.handleHome } />
+                        }
                         
     
                         { edit ? null :
@@ -71,7 +72,7 @@ export default class Template extends Component {
                         </span>
                         }
     
-                        {historyMaster ?
+                        { historyMaster || edit ?
                             <img src={backImage}
                                 className='icone-read-wrapper'
                                 alt='Voltar'

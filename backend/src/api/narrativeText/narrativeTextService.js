@@ -833,7 +833,7 @@ const deleteHistory = (req, res, next) => {
 
             const { author, historyMaster } = data
             if ((author == idAuthor) && (data.alternativeText.length === 0)) {
-                NarrativeText.findOneAndUpdate({ historyMaster }, { $pull: { alternativeText: id } })
+                NarrativeText.findOneAndUpdate({ _id: historyMaster }, { $pull: { alternativeText: id } })
                     .then(text => {
                         NarrativeText.findByIdAndRemove(id)
                             .then(text => {

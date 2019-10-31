@@ -67,6 +67,7 @@ export function putHistory(idAuthor, narrativeText) {
 
 export function postAlternativeText(idHistory, narrativeText) {
     return dispatch => {
+        narrativeText.author = narrativeText.author._id
         api.post(`/narrativeText/addAlternativeText`, { narrativeText, idHistory })
             .then(resp => {
                 toastr.success('Sucesso', 'Operação realizada com sucesso.')
@@ -150,3 +151,21 @@ export function deleteHistory(idHistory, idAuthor) {
             })
     }
 }
+
+/*export function deleteHistory(idHistory, idAuthor) {
+    const toastrConfirmOptions = {
+        onOk: (click) => {
+            console.log('OK: clicked', click)
+            api.delete(`/narrativeText/deleteHistory?idAuthor=${idAuthor}&idHistory=${idHistory}`)
+                .then(resp => {
+                    toastr.success('Sucesso', resp.data.success)
+                }).catch(e => {
+                    e.response.data.errors.forEach(error => toastr.error('Erro', error))
+                })
+        },
+        onCancel: () => console.log('CANCEL: clicked')
+    }
+    return dispatch => {
+        toastr.confirm('Deseja realmente remover história?', toastrConfirmOptions)
+    }
+}*/
