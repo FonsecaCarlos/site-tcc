@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
-
 import { toastr } from 'react-redux-toastr'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -40,7 +39,9 @@ class WriteHistory extends Component {
             onOk: () => {
                 this.setState({isPublic: !isPublic, isModifed: true})
             },
-            onCancel: () => {}
+            onCancel: () => {},
+            okText: isPublic ? 'TORNAR PRIVADA' : 'TORNAR PÚBLICA', 
+            cancelText: 'CANCELAR'
         }
         if(!isPublic)
             toastr.confirm('Deseja tornar história pública? Todos poderão visualizá-la.',
@@ -78,10 +79,19 @@ class WriteHistory extends Component {
         if(isModifed){
             toastr.error('Aviso', 'Salve as alterações')
             return
-        }        
+        }
+        
+        const toastrConfirmOptions = {
+            onOk: () => {
+                const addAlternativeText = !this.state.addAlternativeText
+                this.setState({addAlternativeText})
+            },
+            onCancel: () => {},
+            okText: 'NOVO' , 
+            cancelText: 'PROCURAR'
+        }
+        toastr.confirm('Deseja criar um novo enredo ou usar um já existente?', toastrConfirmOptions)
 
-        const addAlternativeText = !this.state.addAlternativeText
-        this.setState({addAlternativeText})
     }
 
     deleteHistory = ( idHistory, idAuthor ) => {
@@ -90,7 +100,9 @@ class WriteHistory extends Component {
                 this.props.deleteHistory( idHistory, idAuthor )
                 this.setState({home: true})
             },
-            onCancel: () => {}
+            onCancel: () => {},
+            okText: 'REMOVER' , 
+            cancelText: 'CANCELAR'
         }
         toastr.confirm('Deseja realmente remover a história?', toastrConfirmOptions)        
     }

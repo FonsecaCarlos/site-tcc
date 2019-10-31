@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
-
+import { toastr } from 'react-redux-toastr'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { getHistory, addLike, removeLike } from '../manageHistory/mainActions'
@@ -28,8 +28,16 @@ class ReadHistory extends Component {
     }
 
     addAlternativeText = (e) => {
-        const addAlternativeText = !this.state.addAlternativeText
-        this.setState({addAlternativeText})
+        const toastrConfirmOptions = {
+            onOk: () => {
+                const addAlternativeText = !this.state.addAlternativeText
+                this.setState({addAlternativeText})
+            },
+            onCancel: () => {},
+            okText: 'NOVO' , 
+            cancelText: 'PROCURAR'
+        }
+        toastr.confirm('Deseja criar um novo enredo ou usar um já existente?', toastrConfirmOptions)
     }
 
     reloadHistory = ( idHistory, idAuthor ) => {

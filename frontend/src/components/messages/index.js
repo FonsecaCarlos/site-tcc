@@ -12,5 +12,6 @@ export default props => (
         position='top-right'
         transitionIn='fadeIn'
         transitionOut='fadeOut'
-        progressBar />
+        progressBar
+        closeOnToastrClick />
 )
