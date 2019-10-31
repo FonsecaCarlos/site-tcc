@@ -14,7 +14,7 @@ export function getPublicHistorys(page = 1, idAuthor) {
         api.get(`/narrativeText/indexPublic?page=${page}&idAuthor=${idAuthor}`)
             .then(data => {
                 dispatch([
-                    { type: consts.PUBLIC_HISTORYS_FETCHED, payload: data }, 
+                    { type: consts.PUBLIC_HISTORYS_FETCHED, payload: data },
                     setCreated(false),
                     setSearch('')
                 ])
@@ -29,7 +29,7 @@ export function getMyHistorys(page = 1, idAuthor) {
         api.get(`/narrativeText/index?page=${page}&idAuthor=${idAuthor}`)
             .then(data => {
                 dispatch([
-                    { type: consts.MY_HISTORYS_FETCHED, payload: data }, 
+                    { type: consts.MY_HISTORYS_FETCHED, payload: data },
                     setCreated(false),
                     setSearch('')
                 ])

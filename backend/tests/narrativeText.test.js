@@ -2,13 +2,13 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const should = chai.should()
 const assert = require('assert')
-
+const env = require('../src/.env')
 require('../src/loader')
 
 chai.use(chaiHttp)
 
-const BASE_OPEN_URL = 'http://localhost:3003/oapi'
-const BASE_PROTECTED_URL = 'http://localhost:3003/api/narrativeText'
+const BASE_OPEN_URL = env.OAPI
+const BASE_PROTECTED_URL = env.API
 
 const NOW = Date.now()
 const USER = {
