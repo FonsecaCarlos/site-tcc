@@ -228,11 +228,11 @@ const indexHistory = (req, res, next) => {
 
     const aggregate = NarrativeText.aggregate()
     aggregate.lookup({
-        from: "users",
-        localField: "author",
-        foreignField: "_id",
-        as: "author"
-    })
+            from: "users",
+            localField: "author",
+            foreignField: "_id",
+            as: "author"
+        })
         .unwind("author")
         .match({
             "_id": idHist
@@ -281,6 +281,12 @@ const indexHistory = (req, res, next) => {
                 }
             }
         })
+        .lookup({
+            from: "users",
+            localField: "alternativeText.author",
+            foreignField: "_id",
+            as: "authorAlternative"
+        })
         .addFields({
             alternativeText: {
                 $filter: {
@@ -289,17 +295,11 @@ const indexHistory = (req, res, next) => {
                     cond: {
                         $or: [
                             { $eq: ["$$alternativeText.isPublic", true] },
-                            { $lte: ["$$alternativeText.author", idAuth] }
+                            { $eq: ["$$alternativeText.author", idAuth] }
                         ]
                     }
                 }
             }
-        })
-        .lookup({
-            from: "users",
-            localField: "alternativeText.author",
-            foreignField: "_id",
-            as: "authorAlternative"
         })
         .addFields({
             alternativeText: {
@@ -334,7 +334,7 @@ const indexHistory = (req, res, next) => {
                         isPublic: "$$row.isPublic",
                         liked: "$$row.liked",
                         likes: "$$row.likes",
-                        author: { $arrayElemAt: ["$$row.author", 0] },
+                        author: { $arrayElemAt: ["$$row.author", 0] }
                     }
                 }
             }
@@ -400,7 +400,7 @@ const indexHistory = (req, res, next) => {
 const searchHistory = (req, res, next) => {
     const { idAuthor = "", title = "", page = 1 } = req.query
 
-    if ( !ObjectId.isValid(idAuthor) )
+    if (!ObjectId.isValid(idAuthor))
         return res.status(500).json({ errors: ['Parametros inválidos!'] })
 
     const idAuth = new ObjectId(idAuthor)
@@ -521,9 +521,9 @@ const searchHistory = (req, res, next) => {
  */
 const addAlternativeText = (req, res, next) => {
     const { narrativeText = {}, idHistory = '' } = req.body
-    
-    if ( !ObjectId.isValid(idHistory) || !ObjectId.isValid(narrativeText.author) || 
-        !(!!narrativeText.title) )
+
+    if (!ObjectId.isValid(idHistory) || !ObjectId.isValid(narrativeText.author) ||
+        !(!!narrativeText.title))
         return res.status(500).json({ errors: ['Parâmetros inválidos!'] })
 
     delete narrativeText.createdAt
@@ -539,24 +539,24 @@ const addAlternativeText = (req, res, next) => {
             if (data) {
                 User.findById(idAuth)
                     .then(user => {
-                        if( !user || (narrativeText.author!=user._id) )
-                            return res.status(404).json({errors: ['Author inválido!']})       
-                            
-                            const text = new NarrativeText({ ...narrativeText, isMaster: false, historyMaster: id })
-                            text.save()
-                                .then(data => {
-                                    const { _id } = data
-                                    NarrativeText.findOneAndUpdate({ _id: id }, { $push: { alternativeText: _id } })
-                                        .then(alternativeText => {
-                                            return res.status(201).json(data)
-                                        })
-                                        .catch((errors) => {
-                                            return res.status(500).json(errors)
-                                        })
-                                })
-                                .catch((errors) => {
-                                    return res.status(500).json(errors)
-                                })
+                        if (!user || (narrativeText.author != user._id))
+                            return res.status(404).json({ errors: ['Author inválido!'] })
+
+                        const text = new NarrativeText({ ...narrativeText, isMaster: false, historyMaster: id })
+                        text.save()
+                            .then(data => {
+                                const { _id } = data
+                                NarrativeText.findOneAndUpdate({ _id: id }, { $push: { alternativeText: _id } })
+                                    .then(alternativeText => {
+                                        return res.status(201).json(data)
+                                    })
+                                    .catch((errors) => {
+                                        return res.status(500).json(errors)
+                                    })
+                            })
+                            .catch((errors) => {
+                                return res.status(500).json(errors)
+                            })
                     })
             } else {
                 return res.status(404).json({ errors: ['História não encontrada!'] })
@@ -870,18 +870,20 @@ NarrativeText.route('deleteHistory', ['delete'], deleteHistory)
 module.exports = NarrativeText
 
 
-/* Busca uma história e retorna todos os enredos alternativos públicos ou do author.
-Essa consulta é mais verbosa que a próxima, por isso não estou utilizando ela
+/* 
+Usado na consulta IndexHIstory
+Busca uma história e retorna todos os enredos alternativos públicos ou do author.
+
 db.getCollection('narrativetexts').aggregate([
     { $lookup: { from: "users", localField: "author", foreignField: "_id", as: "author" } },
     { $unwind: "$author" },
-    { $match: { "_id": ObjectId("5d20e228010cba28b964e5f3") } },
+    { $match: { "_id": ObjectId("5dbad6c62d868d0bd2054367") } },
     { $lookup: { from: "narrativetexts", localField: "alternativeText", foreignField: "_id", as: "alternativeText" } },
     { $addFields : {
-            isAuthor: { $cond: [{ $eq: ["$author._id", ObjectId("5ca10fd3fa684e1f0525e3ac")] }, true, false] },
+            isAuthor: { $cond: [{ $eq: ["$author._id", ObjectId("5ca1127075a3b9210591d556")] }, true, false] },
             liked: { $cond: {
                         if: { $isArray: "$likes" },
-                        then: { $in: [ ObjectId("5ca10fd3fa684e1f0525e3ac"), "$likes" ] },
+                        then: { $in: [ ObjectId("5ca1127075a3b9210591d556"), "$likes" ] },
                         else: false
                     } },
             likes: { $cond: { if: { $isArray: "$likes" }, then: { $size: "$likes" }, else: 0 } },
@@ -897,7 +899,7 @@ db.getCollection('narrativetexts').aggregate([
                         liked: {
                             $cond: {
                                 if: { $isArray: "$$row.likes" },
-                                then: { $in: [ ObjectId("5ca10fd3fa684e1f0525e3ac"), "$$row.likes" ] },
+                                then: { $in: [ ObjectId("5ca1127075a3b9210591d556"), "$$row.likes" ] },
                                 else: false
                             }
                         },
@@ -909,24 +911,64 @@ db.getCollection('narrativetexts').aggregate([
                 }
             }
         }
-    },{ $unwind: "$alternativeText" },
-    { $match: { $or: [ {"alternativeText.author": ObjectId("5ca10fd3fa684e1f0525e3ac")},
-                            {"alternativeText.isPublic": true}] }
-    },{
-        $group: {
-            _id: "$_id",
-            alternativeText: { $push: "$alternativeText" },
-            author: { $first: "$author" },
-            text: { $first: "$text" },
-            isPublic: { $first: "$isPublic"},
-            isMaster: { $first: "$isMaster"},
-            likes: { $first: "$likes"},
-            title: { $first: "$title"},
-            createdAt: { $first: "$createdAt"},
-            isAuthor: { $first: "$isAuthor"},
-            liked: { $first: "$liked"} },
+    },{ $lookup: { from: "users", localField: "alternativeText.author", 
+        foreignField: "_id", as: "authorAlternative" }
+    },{ $addFields : {
+            alternativeText: {
+                $filter: {
+                    input: "$alternativeText",
+                    as: "alternativeText",
+                    cond: {
+                        $or: [
+                            { $eq: ["$$alternativeText.isPublic", true] },
+                            { $eq: ["$$alternativeText.author", ObjectId("5ca1127075a3b9210591d556")] }
+                        ]
+                    }
+                }
+            }
+        }
+    },{ $addFields : {
+            alternativeText: {
+                $map: {
+                    input: "$alternativeText",
+                    as: "row",
+                    in: {
+                        _id: "$$row._id",
+                        author: "$$row.author",
+                        isPublic: "$$row.isPublic",
+                        title: "$$row.title",
+                        liked: "$$row.liked",
+                        likes: "$$row.likes",
+                        author: {
+                            $cond: {
+                                if: { $in: ["$$row.author", "$authorAlternative._id"] },
+                                then: "$authorAlternative.name",
+                                else: "$$row.author"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },{ $addFields : {
+            alternativeText: {
+                $map: {
+                    input: "$alternativeText",
+                    as: "row",
+                    in: {
+                        _id: "$$row._id",
+                        isPublic: "$$row.isPublic",
+                        title: "$$row.title",
+                        liked: "$$row.liked",
+                        likes: "$$row.likes",
+                        author: { $arrayElemAt: ["$$row.author", 0] }
+                    }
+                }
+            }
+        }
     },{
         $project: { sharedWith: 0, __v: 0, status: 0,
             author: { _id: 0, password: 0, email: 0, __v: 0, passwordResetExpires: 0, passwordResetToken: 0 },
-            alternativeText: { author: 0 } } }])
+            authorAlternative: 0 } }])
+
 */
