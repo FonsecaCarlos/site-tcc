@@ -3,7 +3,8 @@ const env = require('../.env')
 
 mongoose.Promise = global.Promise
 
-module.exports = mongoose.connect(env.DATABASE_URL, {useNewUrlParser:true})
+module.exports = mongoose.connect(env.DATABASE_URL, {useNewUrlParser:true, useFindAndModify: false,
+    useUnifiedTopology: true, useCreateIndex: true})
 
 mongoose.Error.messages.general.required = "O atributo '{PATH}' é obrigatório."
 
