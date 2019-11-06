@@ -14,5 +14,6 @@ export default {
     SEARCH: 'SEARCH',
     GET_PUBLIC_HISTORYS: 'getPublicHistorys',
     GET_MY_HISTORYS: 'getMyHistorys',
-    SEARCH_HISTORY: 'searchHistory'
+    SEARCH_HISTORY: 'searchHistory',
+    MY_ALTERNATIVE_TEXT_FETCHED: 'MY_ALTERNATIVE_TEXT_FETCHED'
 }

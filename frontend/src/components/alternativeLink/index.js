@@ -5,7 +5,7 @@ import likeImage from '../../images/like.png'
 
 class AlternativeLink extends Component {
     render() {
-        const { likes, liked, title } = this.props.alternativeText
+        const { likes, liked, title, author } = this.props.alternativeText
         
         return (
             <div onClick={this.props.onClick} className='read-header-alternativeLink'>
@@ -13,6 +13,7 @@ class AlternativeLink extends Component {
                 <img src={liked ? likedImage : likeImage}
                             alt={liked ? 'Descurtir' : 'Curtir'} />
                 <p>{ title }</p>
+                <p>Autor(a): <strong> { author }</strong> </p>
             </div>
         )
     }

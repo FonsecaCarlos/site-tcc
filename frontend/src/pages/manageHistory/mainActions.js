@@ -141,10 +141,15 @@ export function removeLike(idHistory, idAuthor) {
     }
 }
 
-export function deleteHistory(idHistory, idAuthor) {
+export function deleteHistory(idHistory, idAuthor, historyMaster) {
     return dispatch => {
         api.delete(`/narrativeText/deleteHistory?idAuthor=${idAuthor}&idHistory=${idHistory}`)
             .then(resp => {
+                if(historyMaster)
+                    getHistory(historyMaster, idAuthor).payload.then((resp) => {
+                        dispatch({ type: consts.HISTORY_FETCHED, payload: resp })
+                    })
+
                 toastr.success('Sucesso', resp.data.success)
             }).catch(e => {
                 e.response.data.errors.forEach(error => toastr.error('Erro', error))
@@ -152,20 +157,15 @@ export function deleteHistory(idHistory, idAuthor) {
     }
 }
 
-/*export function deleteHistory(idHistory, idAuthor) {
-    const toastrConfirmOptions = {
-        onOk: (click) => {
-            console.log('OK: clicked', click)
-            api.delete(`/narrativeText/deleteHistory?idAuthor=${idAuthor}&idHistory=${idHistory}`)
-                .then(resp => {
-                    toastr.success('Sucesso', resp.data.success)
-                }).catch(e => {
-                    e.response.data.errors.forEach(error => toastr.error('Erro', error))
-                })
-        },
-        onCancel: () => console.log('CANCEL: clicked')
-    }
+export function getMyAlternativeText(page = 1, idAuthor) {
     return dispatch => {
-        toastr.confirm('Deseja realmente remover história?', toastrConfirmOptions)
+        api.get(`/narrativeText/index?page=${page}&idAuthor=${idAuthor}`)
+            .then(data => {
+                dispatch([
+                    { type: consts.MY_ALTERNATIVE_TEXT_FETCHED, payload: data }
+                ])
+            }).catch(e => {
+                e.response.data.errors.forEach(error => toastr.error('Erro', error))
+            })
     }
-}*/
+}

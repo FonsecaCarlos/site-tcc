@@ -10,6 +10,7 @@ export default props => (
         newestOnTop={false}
         preventDuplicates={true}
         position='top-right'
+        getState={(state) => state.toastr}
         transitionIn='fadeIn'
         transitionOut='fadeOut'
         progressBar

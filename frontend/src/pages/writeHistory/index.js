@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 import { toastr } from 'react-redux-toastr'
+import { actions as toastrActions } from 'react-redux-toastr'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { putHistory, getHistory, setCreated, deleteHistory } from '../manageHistory/mainActions'
-
+import { putHistory, getHistory, setCreated, deleteHistory, getMyAlternativeText } from '../manageHistory/mainActions'
+import AlternativeText from '../../components/alternativeText'
 import TemplateHistory from '../../components/templateHistory'
 
 class WriteHistory extends Component {
@@ -18,7 +19,8 @@ class WriteHistory extends Component {
             addAlternativeText: false,
             isModifed: false,
             home: false
-         }
+        }
+        this.props.getMyAlternativeText(1, this.props.auth._id)
     }
 
     componentDidMount() {
@@ -81,24 +83,59 @@ class WriteHistory extends Component {
             return
         }
         
+        const { auth } = this.props
+        const { history, alternativesTexts } = this.props.narrativeText
+        let count = 1
+        this.props.getMyAlternativeText(count, auth._id)
+        
         const toastrConfirmOptions = {
             onOk: () => {
                 const addAlternativeText = !this.state.addAlternativeText
-                this.setState({addAlternativeText})
+                this.setState({ addAlternativeText })
             },
-            onCancel: () => {},
-            okText: 'NOVO' , 
+            onCancel: () => {
+                const toastr2 = bindActionCreators(toastrActions, this.props.dispatch)
+                
+                const toastrConfirmOptionsTwo = {
+                    id: 'idToastr',
+                    okText: 'CANCELAR',
+                    cancelText: 'PRÓXIMO',
+                    disableCancel: count >= alternativesTexts.pageCount ? true : false,
+                    onCancel: () => {
+                        if(count < alternativesTexts.pageCount){
+                            this.props.getMyAlternativeText(++count, auth._id)
+                            toastr.confirm('Escolha um de seus textos:', { ...toastrConfirmOptionsTwo, 
+                                disableCancel: count >= alternativesTexts.pageCount ? true : false})
+                        }
+                    },
+                    component: () => {
+                        return <AlternativeText history={history}
+                            update={() => {
+                                toastr2.hideConfirm()
+                            }} />
+                    }
+                }
+                toastr.confirm('Escolha um de seus textos:', toastrConfirmOptionsTwo)
+            },
+            okText: 'NOVO',
             cancelText: 'PROCURAR'
         }
         toastr.confirm('Deseja criar um novo enredo ou usar um já existente?', toastrConfirmOptions)
-
     }
 
     deleteHistory = ( idHistory, idAuthor ) => {
+        const { historyMaster } = this.props.narrativeText.history
+    
         const toastrConfirmOptions = {
             onOk: () => {
-                this.props.deleteHistory( idHistory, idAuthor )
-                this.setState({home: true})
+                this.props.deleteHistory( idHistory, idAuthor, historyMaster )
+                
+                if(historyMaster){
+                    this.setState({back: true})
+                }else{
+                    /* Remover historia apagada da lista */
+                    this.setState({home: true})
+                }
             },
             onCancel: () => {},
             okText: 'REMOVER' , 
@@ -141,6 +178,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     putHistory,
     getHistory,
     setCreated,
-    deleteHistory
+    deleteHistory,
+    getMyAlternativeText,
+    dispatch
 }, dispatch)
 export default connect(mapStateToProps, mapDispatchToProps)(WriteHistory)

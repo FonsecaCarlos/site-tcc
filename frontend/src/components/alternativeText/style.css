@@ -1,0 +1,15 @@
+.alternativeText-list {
+    display: block;
+    background-color: rgba(0,0,0,0);
+    color: var(--background-color);
+    margin: 10px 20px;
+    box-sizing: border-box;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    text-align: justify;
+}
+
+.alternativeText-p {
+    text-align: center;
+}

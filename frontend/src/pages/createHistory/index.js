@@ -73,7 +73,7 @@ class CreareHistory extends Component {
                                     'Texto para tomada de decisão'} />
 
                             <div className='create-history-box-button-form'>
-                                <Link to={'/'} className="create-history-button-form bt-danger">
+                                <Link to={'/readhistory'} className="create-history-button-form bt-danger">
                                     Cancelar
                                 </Link>
 
