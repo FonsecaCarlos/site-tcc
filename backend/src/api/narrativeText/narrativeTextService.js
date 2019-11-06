@@ -312,13 +312,8 @@ const indexHistory = (req, res, next) => {
                         isPublic: "$$row.isPublic",
                         liked: "$$row.liked",
                         likes: "$$row.likes",
-                        author: {
-                            $cond: {
-                                if: { $in: ["$$row.author", "$authorAlternative._id"] },
-                                then: "$authorAlternative.name",
-                                else: "$$row.author"
-                            }
-                        }
+                        author: "$$row.author",
+                        authorIndex: { $indexOfArray: [ "$authorAlternative._id", "$$row.author" ] }
                     }
                 }
             }
@@ -334,7 +329,7 @@ const indexHistory = (req, res, next) => {
                         isPublic: "$$row.isPublic",
                         liked: "$$row.liked",
                         likes: "$$row.likes",
-                        author: { $arrayElemAt: ["$$row.author", 0] }
+                        author: { $arrayElemAt: [ "$authorAlternative.name", "$$row.authorIndex" ] }
                     }
                 }
             }
@@ -534,10 +529,10 @@ const addAlternativeText = (req, res, next) => {
     const id = new ObjectId(idHistory)
     const idAuth = new ObjectId(narrativeText.author)
 
-    NarrativeText.findById(id)
+    NarrativeText.findOne({_id: id})
         .then(data => {
             if (data) {
-                User.findById(idAuth)
+                User.findOne({ _id: idAuth})
                     .then(user => {
                         if (!user || (narrativeText.author != user._id))
                             return res.status(404).json({ errors: ['Author inválido!'] })
@@ -934,18 +929,12 @@ db.getCollection('narrativetexts').aggregate([
                     as: "row",
                     in: {
                         _id: "$$row._id",
-                        author: "$$row.author",
                         isPublic: "$$row.isPublic",
                         title: "$$row.title",
                         liked: "$$row.liked",
                         likes: "$$row.likes",
-                        author: {
-                            $cond: {
-                                if: { $in: ["$$row.author", "$authorAlternative._id"] },
-                                then: "$authorAlternative.name",
-                                else: "$$row.author"
-                            }
-                        }
+                        author: "$$row.author",
+                        authorIndex: { $indexOfArray: [ "$authorAlternative._id", "$$row.author" ] }
                     }
                 }
             }
@@ -961,7 +950,7 @@ db.getCollection('narrativetexts').aggregate([
                         title: "$$row.title",
                         liked: "$$row.liked",
                         likes: "$$row.likes",
-                        author: { $arrayElemAt: ["$$row.author", 0] }
+                        author: { $arrayElemAt: [ "$authorAlternative.name", "$$row.authorIndex" ] }
                     }
                 }
             }
