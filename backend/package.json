@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^6.4.0",
-    "bcrypt": "^3.0.4",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "express-query-int": "^3.0.0",
